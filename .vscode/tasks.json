@@ -6,7 +6,7 @@
       {
         "label": "build",
         "command": "jai",
-        "args": ["build.jai", "-", "-n", "-i", "game01"],
+        "args": ["build.jai", "-", "-n", "-i", "game"],
         "presentation": {
           "reveal": "always",
           "clear": true
@@ -18,7 +18,7 @@
       },
       {
         "label": "run",
-        "command": "${workspaceFolder}/bin/game01.exe",
+        "command": "${workspaceFolder}/bin/game.exe",
         "presentation": {
           "reveal": "always",
           "clear": true

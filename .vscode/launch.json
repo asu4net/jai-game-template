@@ -7,7 +7,7 @@
           "name": "Debug",
           "preLaunchTask": "build",
           "console": "integratedTerminal",
-          "program": "${workspaceFolder}/bin/game01.exe",
+          "program": "${workspaceFolder}/bin/game.exe",
           "args": [],
           "cwd": "${workspaceFolder}/bin",
       }
