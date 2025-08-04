@@ -1,0 +1,14 @@
+# Jai ignore folders
+.build/
+modules/
+
+# Generated assets
+atlas/
+
+# Generated binary extensions
+**.exe
+**.dll
+**.pdb
+
+# ImGui specific
+imgui.ini
