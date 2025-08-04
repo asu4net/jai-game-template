@@ -13,7 +13,7 @@ Engine_State :: struct {
 
 #run #if !DEBUG then disable_runtime_console();
 
-engine_run :: (name := DEF_APP_NAME, width := DEF_SCREEN_WIDTH, height := DEF_SCREEN_HEIGHT, process_events_proc : PROCESS_EVENTS_PROC = null) -> bool {
+engine_run :: (app_name := DEF_APP_NAME, width := DEF_SCREEN_WIDTH, height := DEF_SCREEN_HEIGHT, process_events_proc : PROCESS_EVENTS_PROC = null) -> bool {
     
     if context.engine then engine_shutdown();
     context.engine = New(Engine_State);
