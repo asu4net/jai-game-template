@@ -15,14 +15,15 @@ main :: () {
         if is_key_down(.RIGHT) {
             pos += RIGHT_2D * 1.5 * delta_seconds();
         }
-        #if COMP_TIME_ATLAS {
-            atlas_animation_step(*anim);
-            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);    
+        atlas_animation_step(*anim);
+        draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);    
+        
+        #if IMGUI {
+            ImGui.Begin("Animation");
+            ImGui.Text("Time: %", anim.time);
+            ImGui.Text("Duration: %", anim.step);
+            ImGui.Text("Current: %", anim.current);
+            ImGui.End();
         }
-        ImGui.Begin("Animation");
-        ImGui.Text("Time: %", anim.time);
-        ImGui.Text("Duration: %", anim.step);
-        ImGui.Text("Current: %", anim.current);
-        ImGui.End();
     }
 }

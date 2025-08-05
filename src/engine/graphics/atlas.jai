@@ -131,8 +131,7 @@ save_image_atlas :: (atlas: Image_Atlas, location: string, flip := false) -> boo
     ok = save_image(atlas.image, location, flip);
     if !ok then return false;
     atlas_location := String.join(location, "/", atlas.image.name, ".json");
-    #if JAISON then ok = Jaison.json_write_file(atlas_location, atlas);
-    return ok;
+    return Jaison.json_write_file(atlas_location, atlas);;
 }
 
 Atlas_Animation :: struct {

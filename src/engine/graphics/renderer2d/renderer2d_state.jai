@@ -47,10 +47,8 @@ init_renderer2d :: () {
     textures_to_bind[Default_Texture_Slots.WHITE] = *white_texture;
     last_tex_slot = xx Default_Texture_Slots.COUNT;
 
-    #if COMP_TIME_ATLAS {
-        if ATLAS_FILE_LOCATION.count > 0 {
-            init_texture(*atlas_texture, ATLAS_FILE_LOCATION, .NEAREST, .NEAREST);
-        }
+    if ATLAS_FILE_LOCATION.count > 0 {
+        init_texture(*atlas_texture, ATLAS_FILE_LOCATION, .NEAREST, .NEAREST);
     }
 
     for i : 0..MAX_TEXTURE_SLOTS - 1 {
@@ -124,11 +122,9 @@ deinit_renderer2d :: () {
     context.renderer2d = null;
     
     deinit_texture(*white_texture);
-
-    #if COMP_TIME_ATLAS {
-        if ATLAS_FILE_LOCATION.count > 0 {
-            deinit_texture(*atlas_texture);
-        }
+    
+    if ATLAS_FILE_LOCATION.count > 0 {
+        deinit_texture(*atlas_texture);
     }
 
     array_free(quad_batch);
