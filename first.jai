@@ -2,7 +2,6 @@
 
 main :: () {
     engine_run(width = 1920, height = 1080);
-    defer engine_shutdown();
 
     anim: Atlas_Animation;
     anim.loop = true;

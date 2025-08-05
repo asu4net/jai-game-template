@@ -78,10 +78,10 @@ engine_shutdown :: () -> bool {
     context.engine = null;
 
     assert(window != null);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
     deinit_renderer2d();
     #if IMGUI then imgui_deinit();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     free(state);
 
     #if DEBUG {
