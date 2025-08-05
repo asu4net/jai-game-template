@@ -1,3 +1,5 @@
+ImGui :: #import "ImGui";
+
 ImGui_State :: struct {
     ctx: ImGui.ImGuiContext; 
     drawing: bool;

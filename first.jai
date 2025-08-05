@@ -19,11 +19,11 @@ main :: () {
         draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);    
         
         #if IMGUI {
-            ImGui.Begin("Animation");
-            ImGui.Text("Time: %", anim.time);
-            ImGui.Text("Duration: %", anim.step);
-            ImGui.Text("Current: %", anim.current);
-            ImGui.End();
+            imgui_begin("Animation");
+            imgui_text("Time: %", anim.time);
+            imgui_text("Duration: %", anim.step);
+            imgui_text("Current: %", anim.current);
+            imgui_end();
         }
     }
 }
