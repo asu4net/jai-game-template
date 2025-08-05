@@ -1,8 +1,11 @@
 #load "src/engine.jai";
 
 main :: () {
-    engine_run();
+    engine_run(width = 1920, height = 1080);
     defer engine_shutdown();
+
+    anim: Atlas_Animation;
+    anim.loop = true;
 
     pos: Vector2;
     while engine_keep_running() {
@@ -12,10 +15,14 @@ main :: () {
         if is_key_down(.RIGHT) {
             pos += RIGHT_2D * 1.5 * delta_seconds();
         }
-        draw_quad(make_matrix(pos + UP_2D), tint = LIGHT_RED);
         #if COMP_TIME_ATLAS {
-            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = .GOBLIN_IDLE_0, tint = LIGHT_GREEN);    
-            draw_atlas_quad(make_matrix(pos + RIGHT_2D, 0, 20 * ONE_2D), img = .GOBLIN_IDLE_1, tint = LIGHT_BLUE);  
+            atlas_animation_step(*anim);
+            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);    
         }
+        ImGui.Begin("Animation");
+        ImGui.Text("Time: %", anim.time);
+        ImGui.Text("Duration: %", anim.step);
+        ImGui.Text("Current: %", anim.current);
+        ImGui.End();
     }
 }

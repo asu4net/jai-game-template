@@ -12,8 +12,8 @@ Renderer2D :: struct {
     camera           : Camera;
     curr_blend       : Blend;
     curr_primitive   : Primitive_Type;
-    gui_width        : int;
-    gui_height       : int;
+    gui_width        : int = 1920;
+    gui_height       : int = 1080;
     
     // Quad
     quad_ibo         : Index_Buffer;
@@ -40,11 +40,8 @@ init_renderer2d :: () {
     context.renderer2d = New(Renderer2D);
     using state := context.renderer2d;
 
-    gui_width  = DEF_SCREEN_WIDTH;
-    gui_height = DEF_SCREEN_HEIGHT;
-
     set_blend_mode(.ALPHA);
-    
+
     init_white_texture(*white_texture);
 
     textures_to_bind[Default_Texture_Slots.WHITE] = *white_texture;

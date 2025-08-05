@@ -13,7 +13,7 @@ Engine_State :: struct {
 
 #run #if !DEBUG then disable_runtime_console();
 
-engine_run :: (app_name := DEF_APP_NAME, width := DEF_SCREEN_WIDTH, height := DEF_SCREEN_HEIGHT, process_events_proc : PROCESS_EVENTS_PROC = null) -> bool {
+engine_run :: (app_name := "game", width := 1280, height := 720, process_events_proc : PROCESS_EVENTS_PROC = null) -> bool {
     
     if context.engine then engine_shutdown();
     context.engine = New(Engine_State);
@@ -27,16 +27,16 @@ engine_run :: (app_name := DEF_APP_NAME, width := DEF_SCREEN_WIDTH, height := DE
         return false;
     }
     
-    window = SDL_CreateWindow(name.data, xx width, xx height, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(app_name.data, xx width, xx height, SDL_WINDOW_OPENGL);
     
     if !window {
         log_error("Failed to create the window.");
         return false;
     }
-
+    
     SDL_GL_SetAttribute(.SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(.SDL_GL_CONTEXT_MAJOR_VERSION, OPEN_GL_MAJOR);
-    SDL_GL_SetAttribute(.SDL_GL_CONTEXT_MINOR_VERSION, OPEN_GL_MINOR);
+    SDL_GL_SetAttribute(.SDL_GL_CONTEXT_MAJOR_VERSION, value = 4);
+    SDL_GL_SetAttribute(.SDL_GL_CONTEXT_MINOR_VERSION, value = 4);
 
     gl_ctx = SDL_GL_CreateContext(window);
 
