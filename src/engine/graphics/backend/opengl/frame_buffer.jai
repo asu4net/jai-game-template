@@ -67,7 +67,7 @@ invalidate_frame_buffer :: (fb: *Frame_Buffer) {
 
     if fb.color_attachment_specs.count > 0 {
         array_resize(*fb.color_attachments, fb.color_attachment_specs.count);
-        create_textures(multisample, cast(u32) fb.color_attachments.count);
+        create_textures(multisample, fb.color_attachments.data, xx fb.color_attachments.count);
 
         for i : 0..fb.color_attachments.count-1 {
             bind_texture(multisample, fb.color_attachments[i]);
@@ -85,7 +85,7 @@ invalidate_frame_buffer :: (fb: *Frame_Buffer) {
     }
 
     if fb.depth_attachment_spec.texture_format != .NONE {
-        create_textures(multisample, 1);
+        create_textures(multisample, *fb.depth_attachment, 1);
         bind_texture(multisample, fb.depth_attachment);
 
         if fb.depth_attachment_spec.texture_format == .DEPTH24STENCIL8 {
@@ -100,18 +100,36 @@ invalidate_frame_buffer :: (fb: *Frame_Buffer) {
     } else if fb.color_attachments.count == 0 {
         glDrawBuffer(GL_NONE);
     }
-
-    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    
+    #if DEBUG {
+        status := glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if status == {
+            case GL_FRAMEBUFFER_COMPLETE;
+                log("Framebuffer is complete.");
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
+                log_error("Framebuffer incomplete: Attachment is NOT complete.");
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT;
+                log_error("Framebuffer incomplete: No image is attached to FBO.");
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER;
+                log_error("Framebuffer incomplete: Draw buffer.");
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER;
+                log_error("Framebuffer incomplete: Read buffer.");
+            case GL_FRAMEBUFFER_UNSUPPORTED;
+                log_error("Framebuffer unsupported: The combination of internal formats is not supported.");
+            case;
+                log_error("Framebuffer incomplete: Unknown error (0x%X).", status);
+        }
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-framebuffer_bind :: (fb: *Frame_Buffer) {
+bind :: (fb: *Frame_Buffer) {
     glBindFramebuffer(GL_FRAMEBUFFER, fb.fbo);
     glViewport(0, 0, xx fb.spec.width, xx fb.spec.height);
 }
 
-framebuffer_unbind :: () {
+unbind :: (fb: *Frame_Buffer) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -141,7 +159,7 @@ framebuffer_clear_attachment :: (fb: *Frame_Buffer, attachment_index: u32, value
     glClearTexImage(fb.color_attachments[attachment_index], 0, fb_format_to_gl(spec.texture_format), GL_INT, *value);
 }
 
-#scope_module
+#scope_file
 
 MAX_FRAME_BUFFER_SIZE :: 8192;
 
@@ -149,10 +167,8 @@ texture_target :: inline (multisampled : bool) -> GLenum {
     return xx ifx multisampled then GL_TEXTURE_2D_MULTISAMPLE else GL_TEXTURE_2D;
 }
 
-create_textures :: inline (multisampled : bool, count : u32) -> u32 {
-    out_id : u32;
-    glCreateTextures(texture_target(multisampled), count, *out_id);
-    return out_id;
+create_textures :: inline (multisampled : bool, out_id: *u32, count : u32) {
+    glCreateTextures(texture_target(multisampled), count, out_id);
 }
 
 bind_texture :: inline (multisampled : bool, id : u32) {
