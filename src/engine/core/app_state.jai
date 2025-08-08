@@ -13,7 +13,7 @@ App_State :: struct {
 
 #run #if !DEBUG then disable_runtime_console();
 
-run_app :: (name := "game", width := 1280, height := 720) -> bool {
+run_app :: (name := "game", width := 1280, height := 720, vsync := true) -> bool {
 
     if context.app then end_app();
     context.app = New(App_State);
@@ -26,7 +26,7 @@ run_app :: (name := "game", width := 1280, height := 720) -> bool {
         log_error("Failed to init SDL.");
         return false;
     }
-
+    
     window = SDL_CreateWindow(name.data, xx width, xx height, SDL_WINDOW_OPENGL);
     
     if !window {
@@ -50,7 +50,7 @@ run_app :: (name := "game", width := 1280, height := 720) -> bool {
     screen_h = height;
     
     SDL_GL_MakeCurrent(window, gl_ctx);
-    SDL_GL_SetSwapInterval(1);
+    SDL_GL_SetSwapInterval(xx vsync);
     gl_load(*gl, xx SDL_GL_GetProcAddress);
 
     #if DEBUG {
