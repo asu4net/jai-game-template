@@ -87,14 +87,14 @@ keep_running :: () -> bool {
     camera := *context.renderer2d.camera;
     camera.viewport_w = context.app.screen_w;
     camera.viewport_h = context.app.screen_h;
+    // Update deltatime.
+    time_step();
     return !context.app.done;
 }
 
 draw_scope :: () {
     drawing_frame := context.app.drawing_frame; 
     if !drawing_frame {
-        // Update deltatime.
-        time_step();
         // Start using the frame buffer before drawing.
         bind_frame_buffer(*context.app.fb);
         // Clear last frame buffer.
