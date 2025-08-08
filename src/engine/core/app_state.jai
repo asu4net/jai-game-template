@@ -44,10 +44,10 @@ run_app :: (name := "game", width := 1280, height := 720) -> bool {
         log_error("Failed to create the OpenGL context.");
         return false;
     }
-
+    
     SDL_SetWindowResizable(window, true);
-    screen_w   = width;
-    screen_h  = height;
+    screen_w = width;
+    screen_h = height;
     
     SDL_GL_MakeCurrent(window, gl_ctx);
     SDL_GL_SetSwapInterval(1);
