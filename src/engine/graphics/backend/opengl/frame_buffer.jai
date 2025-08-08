@@ -44,10 +44,12 @@ init_frame_buffer :: (fb: *Frame_Buffer, spec: Frame_Buffer.Spec) {
     invalidate_frame_buffer(fb);
 }
 
-deinit_frame_buffer :: (fb: *Frame_Buffer) {
-    glDeleteFramebuffers(1, *fb.fbo);
-    glDeleteTextures(xx fb.color_attachments.count, fb.color_attachments.data);
-    glDeleteTextures(1, *fb.depth_attachment);
+deinit_frame_buffer :: (using fb: *Frame_Buffer) {
+    glDeleteFramebuffers(1, *fbo);
+    glDeleteTextures(xx color_attachments.count, color_attachments.data);
+    glDeleteTextures(1, *depth_attachment);
+    array_free(color_attachments);
+    array_free(color_attachment_specs);
 }
 
 invalidate_frame_buffer :: (fb: *Frame_Buffer) {
@@ -104,8 +106,6 @@ invalidate_frame_buffer :: (fb: *Frame_Buffer) {
     #if DEBUG {
         status := glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if status == {
-            case GL_FRAMEBUFFER_COMPLETE;
-                log("Framebuffer is complete.");
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
                 log_error("Framebuffer incomplete: Attachment is NOT complete.");
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT;
@@ -116,6 +116,7 @@ invalidate_frame_buffer :: (fb: *Frame_Buffer) {
                 log_error("Framebuffer incomplete: Read buffer.");
             case GL_FRAMEBUFFER_UNSUPPORTED;
                 log_error("Framebuffer unsupported: The combination of internal formats is not supported.");
+            case GL_FRAMEBUFFER_COMPLETE;
             case;
                 log_error("Framebuffer incomplete: Unknown error (0x%X).", status);
         }
@@ -124,12 +125,12 @@ invalidate_frame_buffer :: (fb: *Frame_Buffer) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-bind :: (fb: *Frame_Buffer) {
+bind_frame_buffer :: (fb: *Frame_Buffer) {
     glBindFramebuffer(GL_FRAMEBUFFER, fb.fbo);
     glViewport(0, 0, xx fb.spec.width, xx fb.spec.height);
 }
 
-unbind :: (fb: *Frame_Buffer) {
+unbind_frame_buffer :: () {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

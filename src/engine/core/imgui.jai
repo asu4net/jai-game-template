@@ -43,8 +43,17 @@ imgui_deinit :: () {
 imgui_process_events :: inline (event : SDL_Event) {
     ImGui.ImplSDL3_ProcessEvent(*event);
 }
+    
+imgui_draw_scope :: () {
+    drawing := context.imgui.drawing;
+    if !drawing then imgui_begin_draw();
+    else imgui_end_draw();
+    context.imgui.drawing = !drawing;
+}
 
-imgui_begin_draw :: () {
+#scope_file
+
+imgui_begin_draw :: inline () {
     ImGui.ImplOpenGL3_NewFrame();
     ImGui.ImplSDL3_NewFrame();
     ImGui.NewFrame();
@@ -83,7 +92,7 @@ imgui_begin_draw :: () {
     context.imgui.drawing = true;
 }
 
-imgui_end_draw :: () {
+imgui_end_draw :: inline () {
     if !context.imgui.drawing then return;
 
     if ImGui.GetIO().ConfigFlags_ & .DockingEnable
