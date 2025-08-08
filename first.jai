@@ -9,7 +9,7 @@ main :: () {
     anim.loop = true;
 
     while keep_running() {
-        defer swap_buffers();
+        defer end_frame();
         
         if is_key_down(.LEFT) {
         pos += LEFT_2D * 1.5 * frame_time();

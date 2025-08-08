@@ -129,7 +129,8 @@ is_key_down :: inline (input : SDL_Scancode) -> bool {
     return kb_state[input];
 }
 
-swap_buffers :: inline () {
+end_frame :: inline () {
+    reset_temporary_storage();
     SDL_GL_SwapWindow(context.app.window);
 }
 
