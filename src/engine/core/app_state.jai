@@ -123,7 +123,7 @@ end_app :: () {
     #if DEBUG then report_memory_leaks();
 }
 
-is_key_down :: inline (input : SDL_Scancode) -> bool {
+is_key_down :: inline (input: SDL_Scancode) -> bool {
     numkeys : s32;
     kb_state := SDL_GetKeyboardState(*numkeys);
     return kb_state[input];
@@ -146,7 +146,7 @@ process_window_events :: inline () {
         if event.type == {
             case xx SDL_EventType.WINDOW_RESIZED;
             {
-                screen_w  = event.window.data1;
+                screen_w = event.window.data1;
                 screen_h = event.window.data2;
             }
             case xx SDL_EventType.QUIT;
