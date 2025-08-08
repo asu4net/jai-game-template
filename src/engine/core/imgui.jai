@@ -6,7 +6,7 @@ ImGui_State :: struct {
 
 #add_context imgui: *ImGui_State;
 
-imgui_init :: (window: *SDL_Window, gl_ctx : *SDL_GLContext) {
+imgui_init :: (window: Window, g_ctx: Graphics_Context) {
     using imgui := context.imgui;
     if imgui then imgui_deinit(); 
     context.imgui = New(ImGui_State);
@@ -26,7 +26,7 @@ imgui_init :: (window: *SDL_Window, gl_ctx : *SDL_GLContext) {
         style.Colors[ImGui.Col.WindowBg].w = 0.5;
         style.Colors[ImGui.Col.DockingEmptyBg] = .{0, 0, 0, 0};
     }
-    ImGui.ImplSDL3_InitForOpenGL(window, gl_ctx);
+    ImGui.ImplSDL3_InitForOpenGL(window.handle, g_ctx);
     ImGui.ImplOpenGL3_Init();
 }
 

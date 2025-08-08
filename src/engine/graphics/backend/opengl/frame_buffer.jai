@@ -134,14 +134,14 @@ unbind_frame_buffer :: () {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-framebuffer_resize :: (fb: *Frame_Buffer, width: u32, height: u32) {
+resize_frame_buffer :: (fb: *Frame_Buffer, width: int, height: int) {
     if width == 0 || height == 0 {
         log_error("Attempted to resize framebuffer to %, %", width, height);
         return;
     }
 
-    fb.spec.width = width;
-    fb.spec.height = height;
+    fb.spec.width  = xx width;
+    fb.spec.height = xx height;
     invalidate_frame_buffer(fb);
 }
 

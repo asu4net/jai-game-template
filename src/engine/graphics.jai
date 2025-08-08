@@ -3,6 +3,7 @@ ATLAS_DST_DIR   :: "assets/atlas";
 ATLAS_NAME      :: "atlas";
 
 #load "graphics/backend/opengl.jai";
+#load "graphics/backend/sdl/context.jai";
 #load "graphics/renderer2d.jai";
 
 #load "graphics/font.jai";
