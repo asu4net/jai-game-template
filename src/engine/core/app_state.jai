@@ -87,7 +87,7 @@ keep_running :: () -> bool {
     camera := *context.renderer2d.camera;
     camera.viewport_w = context.app.screen_w;
     camera.viewport_h = context.app.screen_h;
-    // Update deltatime.
+    // Update frametime.
     time_step();
     return !context.app.done;
 }

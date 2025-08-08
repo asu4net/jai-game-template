@@ -12,10 +12,10 @@ main :: () {
         defer swap_buffers();
         
         if is_key_down(.LEFT) {
-        pos += LEFT_2D * 1.5 * delta_seconds();
+        pos += LEFT_2D * 1.5 * frame_time();
         }
         if is_key_down(.RIGHT) {
-            pos += RIGHT_2D * 1.5 * delta_seconds();
+            pos += RIGHT_2D * 1.5 * frame_time();
         }
         atlas_animation_step(*anim);     
         

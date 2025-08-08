@@ -146,7 +146,7 @@ Atlas_Animation :: struct {
 
 atlas_animation_step :: (using animation: *Atlas_Animation) {
     if !playing then return;
-    time += delta_seconds();
+    time += frame_time();
     if time < step return;
     time = 0;
     next := (current.(s32) + 1).(Atlas_Image);

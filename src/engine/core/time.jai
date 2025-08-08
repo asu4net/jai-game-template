@@ -1,7 +1,7 @@
 Time :: struct {
     max_delta_time      : float64 = 0.06;
-    fixed_delta_seconds : float64 = 0.06;
-    delta_seconds       : float32 = 0;
+    fixed_frame_time : float64 = 0.06;
+    frame_time       : float32 = 0;
     seconds             : float64 = -1;
     frame_count         : u32 = 0;
     acc_fixed_delta     : float64 = 0;
@@ -18,7 +18,7 @@ time_step :: () {
     // Init
     if seconds < 0 {
         last_time = get_time();
-        acc_fixed_delta = fixed_delta_seconds;
+        acc_fixed_delta = fixed_frame_time;
         seconds = 0;
     }
 
@@ -27,17 +27,17 @@ time_step :: () {
     time_between_frames := current_time - last_time;
     last_time = current_time;
     seconds += time_between_frames;
-    delta_seconds = xx clamp(time_between_frames, 0, max_delta_time) * scale;
-    acc_fixed_delta += xx delta_seconds;
+    frame_time = xx clamp(time_between_frames, 0, max_delta_time) * scale;
+    acc_fixed_delta += xx frame_time;
     
-    while acc_fixed_delta >= fixed_delta_seconds {
-        acc_fixed_delta -= fixed_delta_seconds;
+    while acc_fixed_delta >= fixed_frame_time {
+        acc_fixed_delta -= fixed_frame_time;
         fixed_update_calls += 1;
     }
 }
 
-delta_seconds :: () -> float32 {
-    return context.time.delta_seconds;
+frame_time :: () -> float32 {
+    return context.time.frame_time;
 }
 
 get_time :: () -> float64 {
