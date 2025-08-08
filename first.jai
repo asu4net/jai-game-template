@@ -1,11 +1,11 @@
 #load "src/engine.jai";
 
+pos: Vector2;
+anim: Atlas_Animation;
+
 main :: () {
     run_app(name = "Game?", width = 1920, height = 1080);
     defer end_app();
-    
-    pos: Vector2;
-    anim: Atlas_Animation;
     anim.loop = true;
 
     while keep_running() {
@@ -19,16 +19,16 @@ main :: () {
         }
         atlas_animation_step(*anim);     
         
-        draw_scope();
-        draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);          
-        draw_scope();
-
-        imgui_draw_scope();
-        imgui_begin("Animation");
-        imgui_text("Time: %", anim.time);
-        imgui_text("Duration: %", anim.step);
-        imgui_text("Current: %", anim.current);
-        imgui_end();
-        imgui_draw_scope();
+        draw_frame(() { 
+            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);
+        });
+        
+        draw_imgui(() {
+            imgui_begin("Animation");
+            imgui_text("Time: %", anim.time);
+            imgui_text("Duration: %", anim.step);
+            imgui_text("Current: %", anim.current);
+            imgui_end();
+        });
     }
 }

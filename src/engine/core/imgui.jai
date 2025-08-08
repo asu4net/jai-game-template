@@ -2,7 +2,6 @@ ImGui :: #import "ImGui";
 
 ImGui_State :: struct {
     ctx: ImGui.ImGuiContext; 
-    drawing: bool;
 }
 
 #add_context imgui: *ImGui_State;
@@ -40,20 +39,11 @@ imgui_deinit :: () {
     free(imgui);
 }
 
-imgui_process_events :: inline (event : SDL_Event) {
+process_imgui_events :: inline (event : SDL_Event) {
     ImGui.ImplSDL3_ProcessEvent(*event);
 }
-    
-imgui_draw_scope :: () {
-    drawing := context.imgui.drawing;
-    if !drawing then imgui_begin_draw();
-    else imgui_end_draw();
-    context.imgui.drawing = !drawing;
-}
 
-#scope_file
-
-imgui_begin_draw :: inline () {
+draw_imgui :: inline (proc : ()) {
     ImGui.ImplOpenGL3_NewFrame();
     ImGui.ImplSDL3_NewFrame();
     ImGui.NewFrame();
@@ -89,12 +79,10 @@ imgui_begin_draw :: inline () {
         ImGui.PopStyleVar(3);
         ImGui.DockSpace(ImGui.GetID("Dockspace"), size = .{0, 0});
     }
-    context.imgui.drawing = true;
-}
 
-imgui_end_draw :: inline () {
-    if !context.imgui.drawing then return;
-
+    // User draw.
+    proc();
+    
     if ImGui.GetIO().ConfigFlags_ & .DockingEnable
     then ImGui.End(); // Viewport end.
 

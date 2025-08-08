@@ -6,7 +6,6 @@ App_State :: struct {
     gl_ctx        : SDL_GLContext;
     fb            : Frame_Buffer;
     fb_tex        : Texture;
-    drawing_frame : bool;
 }
 
 #add_context app: *App_State;
@@ -92,24 +91,21 @@ keep_running :: () -> bool {
     return !context.app.done;
 }
 
-draw_scope :: () {
-    drawing_frame := context.app.drawing_frame; 
-    if !drawing_frame {
-        // Start using the frame buffer before drawing.
-        bind_frame_buffer(*context.app.fb);
-        // Clear last frame buffer.
-        clear_screen(); 
-    } else {
-        // Draw all the stuff to the frame buffer.
-        flush_renderer2d();
-        // Stop using the frame buffer.
-        unbind_frame_buffer();
-        // Prepare the frame buffer quad.
-        draw_gui_quad(tex = *context.app.fb_tex, flags = GUIQuadFlag.NONE); 
-        // Draw the frame buffer quad to the screen buffer.
-        flush_renderer2d();
-    }
-    context.app.drawing_frame = !drawing_frame;
+draw_frame :: inline (proc: ()) {
+    // Start using the frame buffer before drawing.
+    bind_frame_buffer(*context.app.fb);
+    // Clear last frame buffer.
+    clear_screen();
+    // User draw.
+    proc();
+    // Draw all the stuff to the frame buffer.
+    flush_renderer2d();
+    // Stop using the frame buffer.
+    unbind_frame_buffer();
+    // Prepare the frame buffer quad.
+    draw_gui_quad(tex = *context.app.fb_tex, flags = GUIQuadFlag.NONE); 
+    // Draw the frame buffer quad to the screen buffer.
+    flush_renderer2d();
 }
 
 end_app :: () {
@@ -145,7 +141,7 @@ process_window_events :: inline () {
     using app := context.app;
     event: SDL_Event;
     while SDL_PollEvent(*event) {
-        #if IMGUI then imgui_process_events(*event);
+        #if IMGUI then process_imgui_events(*event);
         if event.type == {
             case xx SDL_EventType.WINDOW_RESIZED;
             {
