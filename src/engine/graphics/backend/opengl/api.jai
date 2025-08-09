@@ -89,22 +89,16 @@ set_viewport :: (width: u32, height: u32, x: u32 = 0, y: u32 = 0) {
     glViewport(xx x, xx y, xx width, xx height);
 }
 
-// set_clear_color :: (r: f32, g: f32, b: f32, a: f32) {
-//     glClearColor(r, g, b, a);
-// }
+set_clear_color :: (v: Vector4) {
+    glClearColor(xx v.x, xx v.y, xx v.z, xx v.w);
+}
 
-// set_clear_color :: (v: Vector4) {
-//     glClearColor(xx v.x, xx v.y, xx v.z, xx v.w);
-// }
+clear_color_buffer :: () {
+    glClear(GL_COLOR_BUFFER_BIT);
+}
 
-// clear_screen :: () {
-//     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-// }
-
-clear_screen_buffer :: (v := DARK_GREY) {
-    glClearBufferfv(GL_COLOR, 0, *v.x);
-    depth: f32 = 1;
-    glClearBufferfv(GL_DEPTH, 0, *depth);
+clear_depth_buffer :: () {
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 set_blend_enabled :: (enabled: bool = true) {

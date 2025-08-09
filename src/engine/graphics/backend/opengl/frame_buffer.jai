@@ -164,6 +164,18 @@ clear_frame_buffer_attachment :: (fb: *Frame_Buffer, attachment_index: u32, valu
     glClearTexImage(fb.color_attachments[attachment_index], 0, fb_format_to_gl(spec.texture_format), GL_INT, *value);
 }
 
+clear_frame_buffer :: (fb: *Frame_Buffer, attachment_index: u32, value: *f32) {
+    assert(attachment_index < fb.color_attachments.count);
+    spec := fb.color_attachment_specs[attachment_index];
+    glClearTexImage(fb.color_attachments[attachment_index], 0, fb_format_to_gl(spec.texture_format), GL_FLOAT, value);
+}
+
+clear_frame_buffer_color_and_depth :: (v := DARK_GREY) {
+    glClearBufferfv(GL_COLOR, 0, *v.x);
+    depth: f32 = 1;
+    glClearBufferfv(GL_DEPTH, 0, *depth);
+}
+
 #scope_file
 
 MAX_FRAME_BUFFER_SIZE :: 8192;

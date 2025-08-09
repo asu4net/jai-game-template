@@ -73,8 +73,8 @@ draw_frame :: inline (proc: ()) {
     using app := get_app();
     // Start using the frame buffer before drawing.
     bind_frame_buffer(*fb);
-    // Clear screen.
-    clear_screen_buffer();
+    // Clear color buffer.
+    clear_frame_buffer_color_and_depth();
     // Clear last frame buffer.
     clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
     // User draw.
@@ -82,9 +82,7 @@ draw_frame :: inline (proc: ()) {
     // Draw all the stuff to the frame buffer.
     flush_renderer2d();
     // Read the cursor pixel id.
-    mouse_pos := get_mouse_pos();
-    mouse_pos.y = screen_h - mouse_pos.y - 1;
-    pixel_id = read_pixel(*fb, xx Attachment.PX_ID, mouse_pos);
+    update_pixel_id();
     // Stop using the frame buffer.
     unbind_frame_buffer();
     // Prepare the frame buffer quad.
@@ -112,4 +110,13 @@ end_frame :: inline () {
     using app := get_app();
     reset_temporary_storage();
     swap_buffers(*window);
+}
+
+#scope_file
+
+update_pixel_id :: inline () {
+    using app := get_app();
+    mouse_pos := get_mouse_pos();
+    mouse_pos.y = screen_h - mouse_pos.y - 1;
+    pixel_id = read_pixel(*fb, xx Attachment.PX_ID, mouse_pos);
 }
