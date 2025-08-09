@@ -41,25 +41,30 @@ is_key_down :: inline (input: SDL_Scancode) -> bool {
     return kb_state[input];
 }
 
-process_window_events :: inline () {
-    using app := get_app();
+get_mouse_pos :: inline () -> Vector2 {
+    using state: Vector2;
+    SDL_GetMouseState(*x, *y);
+    return state;
+}
+
+process_window_events :: (using window: *Window, done: *bool) {
     event: SDL_Event;
     while SDL_PollEvent(*event) {
         #if IMGUI then process_imgui_events(*event);
         if event.type == {
             case xx SDL_EventType.WINDOW_RESIZED;
             {
-                window.width  = event.window.data1;
-                window.height = event.window.data2;
+                width  = event.window.data1;
+                height = event.window.data2;
             }
             case xx SDL_EventType.QUIT;
             {
-                done = true;
+                done.* = true;
             }
             case xx SDL_EventType.KEY_DOWN;
             {
                 #if DEBUG
-                then if event.key.key == SDLK_ESCAPE then done = true;
+                then if event.key.key == SDLK_ESCAPE then done.* = true;
             }
             case;
         }

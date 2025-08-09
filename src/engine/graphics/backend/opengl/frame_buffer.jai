@@ -147,8 +147,8 @@ resize_frame_buffer :: (fb: *Frame_Buffer, width: int, height: int) {
 
 framebuffer_read_pixel :: (fb: *Frame_Buffer, attachment_index: u32, x: int, y: int) -> int {
     assert(attachment_index < fb.color_attachments.count);
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
 
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
     pixel_data: int;
     glReadPixels(xx x, xx y, 1, 1, GL_RED_INTEGER, GL_INT, *pixel_data);
     return pixel_data;

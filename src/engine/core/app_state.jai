@@ -6,6 +6,7 @@ App_State :: struct {
     screen_h : int;
     fb       : Frame_Buffer;
     fb_tex   : Texture;
+    id       : int;
 }
 
 #add_context app: *App_State;
@@ -27,8 +28,6 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true) -> bool
     screen_w = width;
     screen_h = height;
     
-    set_clear_color(DARK_GREY);
-
     #if IMGUI then imgui_init(window, g_ctx);
     init_renderer2d();
 
@@ -49,7 +48,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true) -> bool
 
 keep_running :: () -> bool {
     using app := get_app();
-    process_window_events();
+    process_window_events(*window, *done);
     // Update viewport size.
     if screen_w != window.width || screen_h != window.height {
         screen_w = window.width;
@@ -69,11 +68,15 @@ draw_frame :: inline (proc: ()) {
     // Start using the frame buffer before drawing.
     bind_frame_buffer(*fb);
     // Clear last frame buffer.
-    clear_screen();
+    framebuffer_clear_attachment(*fb, 1, 0);
+    clear_screen(DARK_GREY);
     // User draw.
     proc();
     // Draw all the stuff to the frame buffer.
     flush_renderer2d();
+    // We read the id here.
+    mouse := Vector2.{get_mouse_pos().x, xx (context.app.screen_h - get_mouse_pos().y - 1)};
+    id = framebuffer_read_pixel(*fb, 1, xx mouse.x, xx mouse.y);
     // Stop using the frame buffer.
     unbind_frame_buffer();
     // Prepare the frame buffer quad.

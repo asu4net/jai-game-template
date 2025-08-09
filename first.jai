@@ -18,16 +18,18 @@ main :: () {
             pos += RIGHT_2D * 1.5 * frame_time();
         }
         atlas_animation_step(*anim);     
-        
-        draw_frame(() { 
-            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current);
+
+        draw_frame(() {
+            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current, id = 1);
         });
-        
+
         draw_imgui(() {
             imgui_begin("Animation");
             imgui_text("Time: %", anim.time);
             imgui_text("Duration: %", anim.step);
             imgui_text("Current: %", anim.current);
+            imgui_text("Mouse pos: %", Vector2.{get_mouse_pos().x, xx (context.app.screen_h - get_mouse_pos().y - 1)});
+            imgui_text("Selected: %", context.app.id);
             imgui_end();
         });
     }
