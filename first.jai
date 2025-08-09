@@ -14,9 +14,6 @@ main :: () {
         
         atlas_animation_step(*anim);     
 
-        // Ejemplo de uso:
-
-
         draw_frame(() {
             draw_atlas_quad(make_matrix(goblin_pos, 0, ONE_2D * 20), img = anim.current, id = 1);
             screen_size := Vector2.{ xx context.app.screen_w, xx context.app.screen_h };
