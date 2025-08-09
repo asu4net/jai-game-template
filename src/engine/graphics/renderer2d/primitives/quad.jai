@@ -80,12 +80,13 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
 
 GUIQuadFlag :: enum_flags u16 {
     NONE;
+    AUTOSIZE;
     FLIP_X;
     FLIP_Y;
     USE_SUBTEX;
 }
 
-draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect: Rect = .{}, tint := WHITE, id := (0).(u32), flags := GUIQuadFlag.USE_SUBTEX) {
+draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect: Rect = .{}, tint := WHITE, id := (0).(u32), flags := GUIQuadFlag.NONE) {
     draw_primitive2d(.QUAD, .ORTHO_SCREEN, blend);
     using state := context.renderer2d;
 
@@ -94,11 +95,6 @@ draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size 
     
     vertex_uvs := DEF_VERTEX_UVS_2D;
     for *vertex_colors it.* = tint;
-
-    coef_x := state.camera.viewport_w.(f32) / state.gui_width;
-    coef_y := state.camera.viewport_h.(f32) / state.gui_height;
-    
-    coef := min(coef_x, coef_y);
 
     pixel_size := Vector2.{ GUI_QUAD_PIXEL_WIDTH, GUI_QUAD_PIXEL_HEIGHT };
 
@@ -113,9 +109,16 @@ draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size 
         for *vertex_uvs multiply(it.*, tiling);
         flip_quad_vertex_uv(*vertex_uvs, xx .FLIP_X & flags, xx .FLIP_Y & flags);
     }
+
+    p := Vector2.{ xx state.camera.viewport_w, xx state.camera.viewport_h };
     
-    p := multiply(pixel_size * coef, size);
-    
+    if flags & .AUTOSIZE {
+        coef_x := state.camera.viewport_w.(f32) / state.gui_width;
+        coef_y := state.camera.viewport_h.(f32) / state.gui_height;
+        coef := min(coef_x, coef_y);
+        p = multiply(pixel_size * coef, size);
+    }
+
     vertex_positions[0] = .{ 0.0, p.y, 0.0, 1.0 };
     vertex_positions[1] = .{ p.x, p.y, 0.0, 1.0 };
     vertex_positions[2] = .{ p.x, 0.0, 0.0, 1.0 };

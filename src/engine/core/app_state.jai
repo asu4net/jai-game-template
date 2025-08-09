@@ -77,7 +77,7 @@ draw_frame :: inline (proc: ()) {
     // Stop using the frame buffer.
     unbind_frame_buffer();
     // Prepare the frame buffer quad.
-    draw_gui_quad(tex = *fb_tex, flags = GUIQuadFlag.NONE); 
+    draw_gui_quad(tex = *fb_tex); 
     // Draw the frame buffer quad to the screen buffer.
     flush_renderer2d();
 }
