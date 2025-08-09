@@ -1,6 +1,6 @@
 #load "src/engine.jai";
 
-pos: Vector2;
+goblin_pos: Vector2;
 anim: Atlas_Animation;
 id: int;
 
@@ -12,24 +12,23 @@ main :: () {
     while keep_running() {
         defer end_frame();
         
-        if is_key_down(.LEFT) {
-        pos += LEFT_2D * 1.5 * frame_time();
-        }
-        if is_key_down(.RIGHT) {
-            pos += RIGHT_2D * 1.5 * frame_time();
-        }
+        pv := context.renderer2d.camera.pv_matrix;
+        screen_size := Vector2.{ xx context.app.screen_w, xx context.app.screen_h };
+        goblin_pos = screen_to_world(pv, get_mouse_pos(), screen_size);
+
         atlas_animation_step(*anim);     
 
         draw_frame(() {
-            draw_atlas_quad(make_matrix(pos, 0, 20 * ONE_2D), img = anim.current, id = 1);
+            draw_atlas_quad(make_matrix(goblin_pos, 0, ONE_2D * 20), img = anim.current, id = 1);
         });
         
         draw_imgui(() {
-            imgui_begin("Animation");
+            imgui_begin("Goblin");
             imgui_text("Time: %", anim.time);
             imgui_text("Duration: %", anim.step);
             imgui_text("Current: %", anim.current);
             imgui_text("Selected: %", context.app.pixel_id);
+            imgui_text("Pos: %", goblin_pos);
             imgui_end();
         });
     }
