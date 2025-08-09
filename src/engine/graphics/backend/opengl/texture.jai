@@ -1,11 +1,11 @@
 Min_Filter :: enum {
-    LINEAR;
     NEAREST;
+    LINEAR;
 }
 
 Mag_Filter :: enum {
-    LINEAR;
     NEAREST;
+    LINEAR;
 }
 
 Wrap_Mode :: enum {
@@ -19,24 +19,70 @@ Texture_Coordinate :: enum {
 }
 
 Texture :: struct {
-    id : u32;
-    width : u32;
-    height : u32;
-    channels : u32;
-    min_filter : Min_Filter;
-    mag_filter : Mag_Filter;
-    wrap_mode_u : Wrap_Mode;
-    wrap_mode_v : Wrap_Mode;
-    pixels : [..] u8;     // REMOVE THIS, WTF BRO QWQ, WHY DID I WRITE THIS SHIEEET
-    image_path : string;  // REMOVE THIS, WTF BRO QWQ, WHY DID I WRITE THIS SHIEEET
-    stbi_loaded : bool;   // REMOVE THIS, WTF BRO QWQ, WHY DID I WRITE THIS SHIEEET
+
+    Spec :: struct {
+        width: int;
+        height: int;
+        channels: u32 = 4;
+        min_filter: Min_Filter;
+        mag_filter: Mag_Filter;
+        wrap_mode_u: Wrap_Mode;
+        wrap_mode_v: Wrap_Mode;
+    }
+
+    id: u32;
+    spec: Spec;
 }
 
-upload_texture_to_gpu :: (using texture : *Texture) {
+is_texture_initialized :: inline (using texture: *Texture) -> bool { return id != 0; } 
+
+init_white_texture :: (using texture : *Texture) -> bool {
+    using texture.spec;
+    width = 1;
+    height = 1;
+    channels = 4;
+    pixels := u8.[ 255, 255, 255, 255 ];
+    upload_texture_to_gpu(texture, pixels);
+    return true;
+}
+
+init_texture :: (texture: *Texture, image: Image, spec: Texture.Spec = .{}) -> bool {
+    the_spec := spec;
+    the_spec.width  = image.width;
+    the_spec.height = image.height;
+    return init_texture(texture, the_spec, image.pixels);    
+}
+
+init_texture :: (texture: *Texture, spec: Texture.Spec, pixels: [] u8) -> bool {
+    if !texture then return false;
+    if !pixels.count then return false;
+    if spec.width * spec.height * spec.channels != pixels.count then return false;
+    if is_texture_initialized(texture) then deinit_texture(texture);
+    texture.spec = spec;
+    upload_texture_to_gpu(texture, pixels);
+    return true;
+}
+
+deinit_texture :: (using texture : *Texture) -> bool {
+    if id == 0 then return false; 
+    glDeleteTextures(1, *id);
+    id = 0;
+    return true;
+}
+
+bind_texture :: (using texture: *Texture, slot: u32 = 0) {
+    assert(id != 0);
+    glBindTextureUnit(slot, id);
+}
+
+#scope_file
+
+upload_texture_to_gpu :: (using texture: *Texture, pixels: [] u8) {
     assert(id == 0);
-    
-    data_format     : u32 = GL_ZERO;
-    internal_format : u32 = GL_ZERO;
+    using texture.spec;
+
+    data_format: u32 = GL_ZERO;
+    internal_format: u32 = GL_ZERO;
     
     if channels == 4 {
         internal_format = GL_RGBA8;
@@ -51,7 +97,7 @@ upload_texture_to_gpu :: (using texture : *Texture) {
     glCreateTextures(GL_TEXTURE_2D, 1, *local_id);
     id = local_id;
     
-    glTextureStorage2D(id, 1, internal_format, width, height);
+    glTextureStorage2D(id, 1, internal_format, xx width, xx height);
 
     set_min_filter(id, min_filter);
     set_mag_filter(id, mag_filter);
@@ -59,73 +105,7 @@ upload_texture_to_gpu :: (using texture : *Texture) {
     set_wrap_mode(id, .U, wrap_mode_u);
     set_wrap_mode(id, .V, wrap_mode_v);
 
-    glTextureSubImage2D(id, 0, 0, 0, width, height, data_format, GL_UNSIGNED_BYTE, pixels.data);
-}
-
-init_white_texture :: (using texture : *Texture) {
-    width = 1;
-    height = 1;
-    channels = 4;
-    assert(pixels.data == null);
-    for i : 0..3 {
-        array_add(*pixels, 255);
-    }
-    upload_texture_to_gpu(texture);
-}
-
-init_texture :: (
-    texture  : *Texture, 
-    path     : string, 
-    mag      : Mag_Filter = .LINEAR,
-    min      : Min_Filter = .LINEAR,
-    wrap_u   : Wrap_Mode  = .REPEAT,
-    wrap_v   : Wrap_Mode  = .REPEAT
-) {
-    #import "stb_image";
-    using texture;
-    
-    mag_filter = mag;
-    min_filter = min;
-    wrap_mode_u = wrap_u;
-    wrap_mode_v = wrap_v;
-    
-    image_path = path;
-
-    assert(pixels.data == null);
-    assert(image_path.count != 0);
-
-    stbi_set_flip_vertically_on_load(1);
-    
-    x, y, c : s32;
-    
-    pixels.data = stbi_load(image_path.data, *x, *y, *c, 0);
-    assert(pixels.data != null);
-    stbi_loaded = true;
-
-    pixels.count = x * y * c;
-    
-    width    = xx x;
-    height   = xx y;
-    channels = xx c;
-
-    upload_texture_to_gpu(texture);
-}
-
-deinit_texture :: (using texture : *Texture) {
-    assert(id != 0);
-    glDeleteTextures(1, *id);
-    assert(pixels.data != null);
-    if stbi_loaded {
-        stbi_image_free(pixels.data);
-    } else {
-        array_free(pixels);
-    }
-    texture.* = .{};
-}
-
-bind :: (using texture : *Texture, slot : u32 = 0) {
-    assert(id != 0);
-    glBindTextureUnit(slot, id);
+    glTextureSubImage2D(id, 0, 0, 0, xx width, xx height, data_format, GL_UNSIGNED_BYTE, pixels.data);
 }
 
 set_mag_filter :: (texture_id : u32, mag_filter : Mag_Filter) {

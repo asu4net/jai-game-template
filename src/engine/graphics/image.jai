@@ -36,7 +36,7 @@ free_image :: (image: *Image) -> bool {
     assert(image != null);
     if !is_image_loaded(image) then return false; 
     free(image.name);
-    free(image.pixels.data);
+    stbi_image_free(image.pixels.data);
     Initialize(image);
     return true;
 }

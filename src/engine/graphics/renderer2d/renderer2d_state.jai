@@ -48,7 +48,9 @@ init_renderer2d :: () {
     last_tex_slot = xx Default_Texture_Slots.COUNT;
 
     if ATLAS_FILE_LOCATION.count > 0 {
-        init_texture(*atlas_texture, ATLAS_FILE_LOCATION, .NEAREST, .NEAREST);
+        ok, image := load_image(ATLAS_FILE_LOCATION);
+        init_texture(*atlas_texture, image);
+        free_image(*image);
     }
 
     for i : 0..MAX_TEXTURE_SLOTS - 1 {
@@ -170,7 +172,7 @@ flush_renderer2d :: () {
     bind_textures :: inline () {
         using state := context.renderer2d;
         for i: 0..last_tex_slot - 1 {
-            bind(textures_to_bind[i], xx i);
+            bind_texture(textures_to_bind[i], xx i);
         }
     }
 

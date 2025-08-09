@@ -46,8 +46,7 @@ init_font :: (font : *Font, path : string = DEF_FONT_PATH) {
     PIXELS_RGB_LENGTH   :: PIXELS_ALPHA_LENGTH * 4;
     font.pixel_height = PIXEL_HEIGHT;
     
-    array_resize(*font.atlas.pixels, PIXELS_RGB_LENGTH ); //pending free
-    pixels_rgb := font.atlas.pixels;
+    pixels_rgb: [PIXELS_RGB_LENGTH] u8;
 
     pixels_alpha := NewArray(PIXELS_ALPHA_LENGTH, u8);
     defer array_free(pixels_alpha);
@@ -70,18 +69,20 @@ init_font :: (font : *Font, path : string = DEF_FONT_PATH) {
 
         pixels_rgb[i] = 255;
     };
-
-    font.atlas.width  = WIDTH;
-    font.atlas.height = HEIGHT;
-    font.atlas.channels = 4;
     
+    spec := Texture.Spec.{
+        width = WIDTH,
+        width = HEIGHT,
+        channels = 4,
+    };
+
     for i : 0..255 {
         x_pos, y_pos : f32;
         glyph : Glyph;
         get_baked_quad(
               baked_char.data
-            , xx font.atlas.width
-            , xx font.atlas.height
+            , xx spec.width
+            , xx spec.height
             , xx i
             , *glyph.x_pos
             , *glyph.y_pos
@@ -91,8 +92,7 @@ init_font :: (font : *Font, path : string = DEF_FONT_PATH) {
         table_add(*font.glyphs, xx i, glyph);
     }
 
-    upload_texture_to_gpu(*font.atlas);
-
+    init_texture(*font.atlas, spec, pixels_rgb);
     font.is_init = true;
 }
 

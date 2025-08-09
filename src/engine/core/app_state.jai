@@ -38,11 +38,11 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true) -> bool
         height = height,
         attachments = .[ .{.RGBA8}, .{.RED_INTEGER}, .{.DEPTH24STENCIL8} ]
     });
-
+    
     // This is a bit hacky, sorry.
     fb_tex.id = fb.color_attachments[0];
-    fb_tex.width =  xx width;
-    fb_tex.height = xx height;
+    fb_tex.spec.width =  xx width;
+    fb_tex.spec.height = xx height;
 
     return true;
 }

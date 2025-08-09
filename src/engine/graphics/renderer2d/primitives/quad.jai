@@ -1,3 +1,7 @@
+GUI_QUAD_PIXEL_WIDTH        :: 200;
+GUI_QUAD_PIXEL_HEIGHT       :: 200;
+PIXEL_TO_WORLD              :: 1.0 / 500.0;
+
 Quad_Vertex :: struct {
     position : Vector4;
     tint     : Vector4;
@@ -7,6 +11,7 @@ Quad_Vertex :: struct {
 }
 
 QuadFlag :: enum_flags u16 {
+    NONE;
     AUTOSIZE;
     FLIP_X;
     FLIP_Y;
@@ -21,7 +26,7 @@ draw_atlas_quad :: (mat := IDENTITY, img := Atlas_Image.COUNT, tiling := ONE_2D,
     draw_quad(mat, *state.atlas_texture, tiling, size, blend, rect, tint, id, flags);
 }
 
-draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect := Rect.{}, tint := WHITE, id := (0).(u32), flags := QuadFlag.AUTOSIZE) {
+draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect := Rect.{}, tint := WHITE, id := (0).(u32), flags := QuadFlag.AUTOSIZE | QuadFlag.USE_SUBTEX) {
     draw_primitive2d(.QUAD, .ORTHO_WORLD, blend);
 
     vertex_positions := DEF_VERTEX_POSITIONS_2D;
@@ -32,8 +37,8 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
     
     if tex != null {
         
-        pixel_width  := tex.width;
-        pixel_height := tex.height;
+        pixel_width  := tex.spec.width;
+        pixel_height := tex.spec.height;
 
         if .USE_SUBTEX & flags {
             
@@ -49,7 +54,7 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
             pixel_size := ifx .USE_SUBTEX & flags then {
                 Vector2.{xx rect.width, xx rect.height};
             } else {
-                Vector2.{xx tex.width, xx tex.height};
+                Vector2.{xx tex.spec.width, xx tex.spec.height};
             }
 
             final_size := pixel_size * size * PIXEL_TO_WORLD;
@@ -78,15 +83,7 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
     state.quad_count += 1;
 }
 
-GUIQuadFlag :: enum_flags u16 {
-    NONE;
-    AUTOSIZE;
-    FLIP_X;
-    FLIP_Y;
-    USE_SUBTEX;
-}
-
-draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect: Rect = .{}, tint := WHITE, id := (0).(u32), flags := GUIQuadFlag.NONE) {
+draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect: Rect = .{}, tint := WHITE, id := (0).(u32), flags := QuadFlag.NONE) {
     draw_primitive2d(.QUAD, .ORTHO_SCREEN, blend);
     using state := context.renderer2d;
 
@@ -104,14 +101,14 @@ draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size 
             pixel_size = Vector2.{ xx rect.width, xx rect.height };
             sub_tex_uv(*vertex_uvs, tex, rect);
         }
-        else pixel_size = Vector2.{ xx tex.width, xx tex.height };
+        else pixel_size = Vector2.{ xx tex.spec.width, xx tex.spec.height };
 
         for *vertex_uvs multiply(it.*, tiling);
         flip_quad_vertex_uv(*vertex_uvs, xx .FLIP_X & flags, xx .FLIP_Y & flags);
     }
 
     p := Vector2.{ xx state.camera.viewport_w, xx state.camera.viewport_h };
-    
+
     if flags & .AUTOSIZE {
         coef_x := state.camera.viewport_w.(f32) / state.gui_width;
         coef_y := state.camera.viewport_h.(f32) / state.gui_height;
@@ -176,7 +173,7 @@ sub_tex_uv :: (vertex_uvs : *Vector2Verts2D, texture : *Texture, rect : Rect) {
     assert(texture && vertex_uvs);
     
     item_px_pos  := Vector2.{ xx rect.x, xx rect.y };
-    texture_size := Vector2.{ xx texture.width, xx texture.height };
+    texture_size := Vector2.{ xx texture.spec.width, xx texture.spec.height };
     item_size    := Vector2.{ xx rect.width, xx rect.height };
     
     top_right, bottom_left : Vector2;
