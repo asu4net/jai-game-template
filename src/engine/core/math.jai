@@ -163,9 +163,6 @@ linear_interp :: (x : f32, min: Vector4, max: Vector4) -> (v : Vector4) {
 }
 
 screen_to_world :: (pv: Matrix4, screen_point: Vector2, window_size: Vector2) -> Vector2 {
-    half_screen_width  := window_size.x / 2.0;
-    half_screen_height := window_size.y / 2.0;
-    
     ok, inverse_pv := inverse(pv);
     
     if !ok then return ONE_2D * -1;
@@ -173,7 +170,7 @@ screen_to_world :: (pv: Matrix4, screen_point: Vector2, window_size: Vector2) ->
     // Screen Coords to Normalized Device Coordinates (NDC) [-1, 1]
     ndc_x := (screen_point.x / window_size.x) * 2.0 - 1.0;
     ndc_y := 1.0 - (screen_point.y / window_size.y) * 2.0; // invert Y
-
+    
     // Z=0 for near plane, Z=-1 if OpenGL
     ndc_z: f32 = -1;
 

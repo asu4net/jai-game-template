@@ -20,6 +20,15 @@ Camera :: struct {
     size := (+1.5).(f32);
 }
 
+get_ortho_world :: (using camera: Camera) -> Matrix4 {
+    set_viewport(xx viewport_w, xx viewport_h);
+    aspect := cast(f32) viewport_w / cast(f32) viewport_h;
+    limit  := aspect * size;
+    p := orthographic_projection_matrix(-limit, limit, -size, size, near, far);
+    v := look_at(eye, front, right, up);
+    return p * v;
+}
+
 update_render_camera :: (using camera : *Camera) {
 
     update_ortho_world :: (using camera : *Camera) {
