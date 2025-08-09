@@ -161,3 +161,21 @@ linear_interp :: (x : f32, min: Vector4, max: Vector4) -> (v : Vector4) {
     v.w = linear_interp(x, min.w, max.w);
     return v;
 }
+
+screen_to_world :: (mvp: Matrix4, screen_point: Vector2, window_size: Vector2) -> Vector2 {
+    half_screen_width  := window_size.x / 2.0;
+    half_screen_height := window_size.y / 2.0;
+
+    ok, inverse_mv := inverse(mvp);
+    if !ok then return ZERO_2D;
+
+    near_plane_x := (screen_point.x - half_screen_width) / half_screen_width;
+    near_plane_y := -((screen_point.y - half_screen_height) / half_screen_height);
+
+    near_plane := Vector4.{ near_plane_x, near_plane_y, -1.0, 1.0 };
+
+    near_result := inverse_mv * near_plane;
+    near_result /= near_result.w;
+
+    return Vector2.{ near_result.x, near_result.y };
+}
