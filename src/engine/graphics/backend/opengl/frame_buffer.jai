@@ -145,7 +145,7 @@ resize_frame_buffer :: (fb: *Frame_Buffer, width: int, height: int) {
     invalidate_frame_buffer(fb);
 }
 
-framebuffer_read_pixel :: (fb: *Frame_Buffer, attachment_index: u32, x: int, y: int) -> int {
+read_pixel :: (fb: *Frame_Buffer, attachment_index: u32, x: int, y: int) -> int {
     assert(attachment_index < fb.color_attachments.count);
 
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
@@ -154,7 +154,11 @@ framebuffer_read_pixel :: (fb: *Frame_Buffer, attachment_index: u32, x: int, y: 
     return pixel_data;
 }
 
-framebuffer_clear_attachment :: (fb: *Frame_Buffer, attachment_index: u32, value: int) {
+read_pixel :: inline (fb: *Frame_Buffer, attachment_index: u32, pos: Vector2) -> int {
+    return read_pixel(fb, attachment_index, xx pos.x, xx pos.y);
+}
+
+clear_frame_buffer_attachment :: (fb: *Frame_Buffer, attachment_index: u32, value: int = 0) {
     assert(attachment_index < fb.color_attachments.count);
     spec := fb.color_attachment_specs[attachment_index];
     glClearTexImage(fb.color_attachments[attachment_index], 0, fb_format_to_gl(spec.texture_format), GL_INT, *value);

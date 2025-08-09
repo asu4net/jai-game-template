@@ -101,8 +101,10 @@ set_viewport :: (width: u32, height: u32, x: u32 = 0, y: u32 = 0) {
 //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 // }
 
-clear_screen :: (v: Vector4) {
+clear_screen_buffer :: (v := DARK_GREY) {
     glClearBufferfv(GL_COLOR, 0, *v.x);
+    depth: f32 = 1;
+    glClearBufferfv(GL_DEPTH, 0, *depth);
 }
 
 set_blend_enabled :: (enabled: bool = true) {

@@ -1,3 +1,9 @@
+Attachment :: enum u8 {
+    COLOR;
+    PX_ID;
+    DEPTH;
+}
+
 App_State :: struct {
     done     : bool;
     window   : Window;
@@ -6,7 +12,7 @@ App_State :: struct {
     screen_h : int;
     fb       : Frame_Buffer;
     fb_tex   : Texture;
-    id       : int;
+    pixel_id : int;
 }
 
 #add_context app: *App_State;
@@ -67,16 +73,18 @@ draw_frame :: inline (proc: ()) {
     using app := get_app();
     // Start using the frame buffer before drawing.
     bind_frame_buffer(*fb);
+    // Clear screen.
+    clear_screen_buffer();
     // Clear last frame buffer.
-    framebuffer_clear_attachment(*fb, 1, 0);
-    clear_screen(DARK_GREY);
+    clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
     // User draw.
     proc();
     // Draw all the stuff to the frame buffer.
     flush_renderer2d();
-    // We read the id here.
-    mouse := Vector2.{get_mouse_pos().x, xx (context.app.screen_h - get_mouse_pos().y - 1)};
-    id = framebuffer_read_pixel(*fb, 1, xx mouse.x, xx mouse.y);
+    // Read the cursor pixel id.
+    mouse_pos := get_mouse_pos();
+    mouse_pos.y = screen_h - mouse_pos.y - 1;
+    pixel_id = read_pixel(*fb, xx Attachment.PX_ID, mouse_pos);
     // Stop using the frame buffer.
     unbind_frame_buffer();
     // Prepare the frame buffer quad.
