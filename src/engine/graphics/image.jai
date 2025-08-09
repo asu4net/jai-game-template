@@ -28,7 +28,9 @@ load_image :: (image: *Image, src: string) -> bool {
     image.pixels.data = stbi_load(to_c_string(src ,,temp), *image.width, *image.height, *count, 0);
     image.pixels.count = image.width * image.height * count;
     success := image.pixels.data != null;
-    if !success then log("Could not load image [%]", src);
+    if !success 
+    then log("Could not load image [%]", src);
+    else log("Image loaded.");
     return success;
 }
 
