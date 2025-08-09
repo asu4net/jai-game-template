@@ -164,7 +164,7 @@ draw_primitive2d :: inline (primitive_type : Primitive_Type, camera_mode : Camer
 flush_renderer2d :: () {
     using state := context.renderer2d;
     assert(state != null);
-
+    
     // Submit data to gpu
     update_render_camera(*camera);
     if curr_blend != .NONE then set_blend_mode(curr_blend);
@@ -182,13 +182,13 @@ flush_renderer2d :: () {
             bind_textures();
             bind(*quad_shader);
             set_constant_sampler2d(*quad_shader, "u_Textures[0]", tex_slots, MAX_TEXTURE_SLOTS);
-            set_constant_matrix4(*quad_shader, "u_ProjectionView", camera.pv_matrix);
+            set_constant_matrix4(*quad_shader, "u_ProjectionView", get_matrix(camera));
             set_vertex_buffer_data(*quad_vbo, *quad_batch[0], xx (size_of(Quad_Vertex) * VERTICES_PER_2D_PRIMITIVE * quad_count));
             draw_elements(*quad_vao, quad_index_count);
         }
         case .CIRCLE; {
             bind(*circle_shader);
-            set_constant_matrix4(*circle_shader, "u_ProjectionView", camera.pv_matrix);
+            set_constant_matrix4(*circle_shader, "u_ProjectionView", get_matrix(camera));
             set_vertex_buffer_data(*circle_vbo, *circle_batch[0], xx (size_of(Circle_Vertex) * VERTICES_PER_2D_PRIMITIVE * circle_count));
             draw_elements(*circle_vao, circle_index_count);
         }
