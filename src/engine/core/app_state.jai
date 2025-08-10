@@ -118,7 +118,7 @@ get_pixel_id :: inline () -> int {
     return pixel_id;
 }
 
-mouse_world_pos :: inline () -> Vector2 {
+get_mouse_world_pos :: inline () -> Vector2 {
     using app := get_app();
     pv := context.renderer2d.camera.ortho_world;
     mouse_pos := get_mouse_pos();
