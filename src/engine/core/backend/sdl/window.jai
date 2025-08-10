@@ -35,27 +35,6 @@ swap_buffers :: inline (using window: *Window)  {
 
 // *** refactor from here ***.
 
-is_key_down :: inline (input: SDL_Scancode) -> bool {
-    numkeys : s32;
-    kb_state := SDL_GetKeyboardState(*numkeys);
-    return kb_state[input];
-}
-
-SDL_BUTTON_LMASK :: 1 << 0;
-SDL_BUTTON_MMASK :: 1 << 1;
-SDL_BUTTON_RMASK :: 1 << 2;
-
-is_mouse_button_down :: (mask: u32) -> bool {
-    state := SDL_GetMouseState(null, null);
-    return (state & mask) != 0;
-}
-
-get_mouse_pos :: inline () -> Vector2 {
-    using state: Vector2;
-    SDL_GetMouseState(*x, *y);
-    return state;
-}
-
 process_window_events :: (using window: *Window, done: *bool) {
     event: SDL_Event;
     while SDL_PollEvent(*event) {

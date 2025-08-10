@@ -11,15 +11,14 @@ main :: () {
 
     while keep_running() {
         defer end_frame();
-        
-        atlas_animation_step(*anim);     
 
+        atlas_animation_step(*anim);     
+        
         draw_frame(() {
             draw_atlas_quad(make_matrix(goblin_pos, 0, ONE_2D * 20), img = anim.current, id = 1);
-            screen_size := Vector2.{ xx context.app.screen_w, xx context.app.screen_h };
 
-            if context.app.pixel_id == 1 && is_mouse_button_down(SDL_BUTTON_LMASK) {
-                goblin_pos = screen_to_world(context.renderer2d.camera.ortho_world, get_mouse_pos(), screen_size);
+            if get_pixel_id() == 1 && is_mouse_button_down(.L) {
+                goblin_pos = mouse_world_pos();
             }
         });
         
@@ -28,7 +27,7 @@ main :: () {
             imgui_text("Time: %", anim.time);
             imgui_text("Duration: %", anim.step);
             imgui_text("Current: %", anim.current);
-            imgui_text("Selected: %", context.app.pixel_id);
+            imgui_text("Selected: %", get_pixel_id());
             imgui_text("Pos: %", goblin_pos);
             imgui_end();
         });

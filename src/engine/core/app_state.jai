@@ -112,6 +112,19 @@ end_frame :: inline () {
     swap_buffers(*window);
 }
 
+// The current mouse-hovered pixel id.
+get_pixel_id :: inline () -> int {
+    using app := get_app();
+    return pixel_id;
+}
+
+mouse_world_pos :: inline () -> Vector2 {
+    using app := get_app();
+    pv := context.renderer2d.camera.ortho_world;
+    mouse_pos := get_mouse_pos();
+    return screen_to_world(pv, mouse_pos, .{ xx screen_w, xx screen_h });
+}
+
 #scope_file
 
 update_pixel_id :: inline () {
