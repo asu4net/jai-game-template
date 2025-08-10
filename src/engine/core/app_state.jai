@@ -12,7 +12,7 @@ App_State :: struct {
     fb          : Frame_Buffer;
     fb_tex      : Texture;
     pixel_id    : int;
-    clear_color : Vector4 = DARK_GREY;
+    clear_color : Vector4;
 }
 
 #add_context app: *App_State;
@@ -22,11 +22,13 @@ is_app  :: inline () => context.app != null;
 
 #run #if !DEBUG then disable_runtime_console();
 
-run_app :: (name := "game", width := 1280, height := 720, vsync := true) -> bool {
+run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint := DARK_GREY) -> bool {
     if is_app() then end_app();
     set_app(New(App_State));
+
     using app := get_app();
-    
+    clear_color = bg_tint;
+
     set_working_directory(String.path_strip_filename(System.get_path_of_running_executable()));
     init_window(*window, name, width, height, vsync);
     g_ctx = create_graphics_context(window.handle);
