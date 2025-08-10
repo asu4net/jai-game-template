@@ -5,13 +5,14 @@ Attachment :: enum u8 {
 }
 
 App_State :: struct {
-    done     : bool;
-    window   : Window;
-    g_ctx    : Graphics_Context;
-    viewport : Vector2;
-    fb       : Frame_Buffer;
-    fb_tex   : Texture;
-    pixel_id : int;
+    done        : bool;
+    window      : Window;
+    g_ctx       : Graphics_Context;
+    viewport    : Vector2;
+    fb          : Frame_Buffer;
+    fb_tex      : Texture;
+    pixel_id    : int;
+    clear_color : Vector4 = DARK_GREY;
 }
 
 #add_context app: *App_State;
@@ -52,7 +53,7 @@ draw_frame :: inline (proc: ()) {
     // Start using the frame buffer before drawing.
     bind_frame_buffer(*fb);
     // Clear color buffer.
-    clear_frame_buffer_color_and_depth();
+    clear_frame_buffer_color_and_depth(tint = clear_color);
     // Clear last frame buffer.
     clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
     // User draw.

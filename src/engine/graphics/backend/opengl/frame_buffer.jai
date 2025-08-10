@@ -172,8 +172,8 @@ clear_frame_buffer :: (fb: *Frame_Buffer, attachment_index: u32, value: *f32) {
     glClearTexImage(fb.color_attachments[attachment_index], 0, fb_format_to_gl(spec.texture_format), GL_FLOAT, value);
 }
 
-clear_frame_buffer_color_and_depth :: (v := DARK_GREY) {
-    glClearBufferfv(GL_COLOR, 0, *v.x);
+clear_frame_buffer_color_and_depth :: (tint := DARK_GREY) {
+    glClearBufferfv(GL_COLOR, 0, *tint.x);
     depth: f32 = 1;
     glClearBufferfv(GL_DEPTH, 0, *depth);
 }
