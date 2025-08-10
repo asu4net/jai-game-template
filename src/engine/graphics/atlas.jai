@@ -5,6 +5,10 @@ Rect :: struct {
     height: int;
 }
 
+is_rect_initialized :: inline (using rect: Rect) -> bool {
+    return width != 0 || height != 0;
+}
+
 Image_Atlas_Item :: struct {
     name: string;
     rect: Rect;

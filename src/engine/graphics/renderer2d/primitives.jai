@@ -21,6 +21,14 @@ DEF_VERTEX_UVS_2D :Vector2Verts2D: .[
     .{ 0.0, 1.0 }  // top-left
 ];
 
+Primitive2D :: struct {
+    transform := IDENTITY;
+    tiling    := ONE_2D;
+    tint      := WHITE;
+    blend     := Blend.ALPHA; 
+    pixel_id  := 0;
+}
+
 #load "primitives/circle.jai";
 #load "primitives/quad.jai";
 #load "primitives/text.jai";

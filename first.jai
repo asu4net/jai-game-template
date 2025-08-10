@@ -13,10 +13,10 @@ main :: () {
         defer end_frame();
 
         atlas_animation_step(*anim);     
-
+        
         draw_frame(() {
-            draw_atlas_quad(make_matrix(goblin_pos, 0, ONE_2D * 20), img = anim.current, id = 1);
-
+            draw_quad(.{ transform = make_matrix(goblin_pos), size = .{ 10, 10 }, image = anim.current, pixel_id = 1 });
+            
             if get_pixel_id() == 1 && is_mouse_button_down(.L) {
                 goblin_pos = get_mouse_world_pos();
             }

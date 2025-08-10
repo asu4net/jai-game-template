@@ -1,5 +1,6 @@
 GUI_QUAD_PIXEL_WIDTH        :: 200;
 GUI_QUAD_PIXEL_HEIGHT       :: 200;
+WHITE_QUAD_SIZE             :: 200;
 PIXEL_TO_WORLD              :: 1.0 / 500.0;
 
 Quad_Vertex :: struct {
@@ -15,20 +16,33 @@ QuadFlag :: enum_flags u16 {
     AUTOSIZE;
     FLIP_X;
     FLIP_Y;
-    USE_SUBTEX;
 }
 
-draw_atlas_quad :: (mat := IDENTITY, img := Atlas_Image.COUNT, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, tint := WHITE, id := (0).(u32), flags := QuadFlag.AUTOSIZE | QuadFlag.USE_SUBTEX) {
-    #if ATLAS_FILE_LOCATION.count <= 0 then return;
-    if img == .COUNT return;
-    rect := get_atlas_rect(img);
-    state := context.renderer2d;
-    draw_quad(mat, *state.atlas_texture, tiling, size, blend, rect, tint, id, flags);
+Quad :: struct {
+    #as using base: Primitive2D;
+    size  := ONE_2D;
+    image := Atlas_Image.COUNT;
+    flags := QuadFlag.AUTOSIZE;
 }
 
-draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := ONE_2D, blend := Blend.ALPHA, rect := Rect.{}, tint := WHITE, id := (0).(u32), flags := QuadFlag.AUTOSIZE | QuadFlag.USE_SUBTEX) {
+draw_quad :: (using quad: Quad = .{}) {
+    using state := context.renderer2d;
+    #if ATLAS_FILE_LOCATION.count <= 0 then {
+        draw_quad_with_texture(quad, *white_texture);
+        return;
+    }
+    if image == .COUNT {
+        draw_quad_with_texture(quad, *white_texture);
+        return;
+    }
+    rect := get_atlas_rect(image);
+    draw_quad_with_texture(quad, *atlas_texture, rect);
+}
+
+draw_quad_with_texture :: (using quad: Quad = .{}, tex: *Texture = null, rect: Rect = .{}) {
     draw_primitive2d(.QUAD, .ORTHO_WORLD, blend);
-
+    
+    using state := context.renderer2d;
     vertex_positions := DEF_VERTEX_POSITIONS_2D;
     vertex_uvs := DEF_VERTEX_UVS_2D;
 
@@ -40,8 +54,9 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
         pixel_width  := tex.spec.width;
         pixel_height := tex.spec.height;
 
-        if .USE_SUBTEX & flags {
-            
+        use_subtex := is_rect_initialized(rect);
+
+        if use_subtex {
             pixel_width  = xx rect.width;
             pixel_height = xx rect.height;
             sub_tex_uv(*vertex_uvs, tex, rect);
@@ -51,14 +66,16 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
         flip_quad_vertex_uv(*vertex_uvs, xx .FLIP_X & flags, xx .FLIP_Y & flags);
 
         if .AUTOSIZE & flags {
-            pixel_size := ifx .USE_SUBTEX & flags then {
+            pixel_size := ifx use_subtex then {
                 Vector2.{xx rect.width, xx rect.height};
             } else {
                 Vector2.{xx tex.spec.width, xx tex.spec.height};
             }
 
             final_size := pixel_size * size * PIXEL_TO_WORLD;
-            half_size  := final_size / 2.0;
+            if tex == *white_texture then final_size *= WHITE_QUAD_SIZE;
+
+            half_size := final_size / 2.0;
 
             vertex_positions[0] = .{ -half_size.x, -half_size.y, 0.0, 1.0 };
             vertex_positions[1] = .{  half_size.x, -half_size.y, 0.0, 1.0 };
@@ -67,15 +84,13 @@ draw_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size := O
         }
     }
     
-    using state := context.renderer2d;
-
-    for *vertex_positions it.* = mat * it.*;
+    for *vertex_positions it.* = transform * it.*;
     
     slot := assign_tex_slot(tex);
 
     for i : 0..VERTICES_PER_2D_PRIMITIVE - 1 {
         state.quad_batch[i + state.quad_count * VERTICES_PER_2D_PRIMITIVE] = .{
-            vertex_positions[i], vertex_colors[i], vertex_uvs[i], slot, xx id
+            vertex_positions[i], vertex_colors[i], vertex_uvs[i], slot, xx pixel_id
         };
     }    
     
@@ -95,9 +110,11 @@ draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size 
 
     pixel_size := Vector2.{ GUI_QUAD_PIXEL_WIDTH, GUI_QUAD_PIXEL_HEIGHT };
 
+    use_subtex := is_rect_initialized(rect);
+
     if tex != null {
         
-        if .USE_SUBTEX & flags then {
+        if use_subtex then {
             pixel_size = Vector2.{ xx rect.width, xx rect.height };
             sub_tex_uv(*vertex_uvs, tex, rect);
         }
