@@ -1,8 +1,3 @@
-Default_Texture_Slots :: enum {
-    WHITE;
-    COUNT;
-}
-
 Renderer2D :: struct {
     white_texture    : Texture;
     atlas_texture    : Texture;
@@ -42,16 +37,8 @@ init_renderer2d :: () {
 
     set_blend_mode(.ALPHA);
 
-    init_white_texture(*white_texture);
-
-    textures_to_bind[Default_Texture_Slots.WHITE] = *white_texture;
-    last_tex_slot = xx Default_Texture_Slots.COUNT;
-
-    if ATLAS_FILE_LOCATION.count > 0 {
-        ok, image := load_image(ATLAS_FILE_LOCATION);
-        init_texture(*atlas_texture, image);
-        free_image(*image);
-    }
+    load_white_texture(*white_texture);
+    load_comp_time_atlas_texture(*atlas_texture);
 
     for i : 0..MAX_TEXTURE_SLOTS - 1 {
         tex_slots[i] = xx i;
@@ -195,7 +182,7 @@ flush_renderer2d :: () {
     }
 
     // Reset state
-    last_tex_slot      = xx Default_Texture_Slots.COUNT;
+    last_tex_slot      = 0;
     curr_blend         = .NONE;
     curr_primitive     = .NONE;
     camera.mode        = .NONE;
@@ -205,17 +192,15 @@ flush_renderer2d :: () {
     circle_index_count = 0;
 }
 
-assign_tex_slot :: (texture : *Texture) -> (tex_slot : s32) {
+assign_tex_slot :: (texture: *Texture) -> (tex_slot : s32) {
 
     using state := context.renderer2d;
 
-    tex_slot: s32 = xx Default_Texture_Slots.WHITE;
-    if texture == null {
-        return tex_slot;
-    }
-
+    tex_slot: s32;
+    texture_ := ifx !texture then *white_texture else texture; 
+    
     for i : 0..state.last_tex_slot - 1{
-        if state.textures_to_bind[i].id == texture.id {
+        if state.textures_to_bind[i].id == texture_.id {
             tex_slot = i;
             break;
         }
@@ -224,7 +209,7 @@ assign_tex_slot :: (texture : *Texture) -> (tex_slot : s32) {
         if state.last_tex_slot > MAX_TEXTURE_SLOTS {
             flush_renderer2d();
         }
-        state.textures_to_bind[state.last_tex_slot] = texture;
+        state.textures_to_bind[state.last_tex_slot] = texture_;
         tex_slot = state.last_tex_slot;
         state.last_tex_slot += 1;
     }

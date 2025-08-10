@@ -1,5 +1,15 @@
 #insert #run generate_comp_time_atlas();
 
+load_comp_time_atlas_texture :: (texture: *Texture) -> bool {
+    if ATLAS_FILE_LOCATION.count > 0 {
+        ok, image := load_image(ATLAS_FILE_LOCATION);
+        init_texture(texture, image);
+        free_image(*image);
+        return true;
+    }
+    return false;
+}
+
 get_atlas_rect :: (t: Atlas_Image) -> Rect {
     if t == .COUNT then return .{};
     return ATLAS_RECT_DATA[xx t];

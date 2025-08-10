@@ -36,7 +36,7 @@ Texture :: struct {
 
 is_texture_initialized :: inline (using texture: *Texture) -> bool { return id != 0; } 
 
-init_white_texture :: (using texture : *Texture) -> bool {
+load_white_texture :: (using texture : *Texture) -> bool {
     using texture.spec;
     width = 1;
     height = 1;
