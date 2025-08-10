@@ -3,6 +3,7 @@ Image :: struct {
     width: s32;
     height: s32;
     pixels: [] u8;
+    stbi_allocated := true;
 }
 
 is_image_loaded :: inline (image: Image) -> bool {
@@ -38,7 +39,9 @@ free_image :: (image: *Image) -> bool {
     assert(image != null);
     if !is_image_loaded(image) then return false; 
     free(image.name);
-    stbi_image_free(image.pixels.data);
+    if image.stbi_allocated 
+    then stbi_image_free(image.pixels.data);
+    else free(image.pixels.data);
     Initialize(image);
     return true;
 }
@@ -59,8 +62,8 @@ save_image :: (using image: Image, location: string, flip := false) -> bool {
     #import "stb_image_write";
     ok := stbi_write_png(to_c_string(path), width, height, 4, final_image.pixels.data, width * 4) != 0;
     
-    if flip then free_image(*final_image); 
     log("Image [%] saved at [%].", name, path);
+    if flip then free_image(*final_image); 
     return ok;
 }
 
@@ -80,6 +83,7 @@ flip_image :: (using image: Image, new_name := "") -> bool, Image {
     }
     
     image_copy := image;
+    image_copy.stbi_allocated = false;
     image_copy.name = new_name;
     image_copy.pixels.data = flipped_pixels;
     return true, image_copy;
