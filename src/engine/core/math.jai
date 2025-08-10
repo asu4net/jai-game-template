@@ -114,14 +114,35 @@ rotate_around :: (pivot : Vector2, angle : f32, point : Vector2) -> Vector2 {
     return new_point;
 }
 
-make_matrix :: (pos : Vector3, rot := ZERO_3D, sc := ONE_3D) -> Matrix4 {
+make_matrix :: (pos: Vector3, rot := ZERO_3D, sc := ONE_3D) -> Matrix4 {
+    // Small opt
+    if rot.x == 0 && rot.y == 0 && rot.z == 0 {
+        mat := IDENTITY;
+        mat._11 = sc.x;
+        mat._22 = sc.y;
+        mat._33 = sc.z;
+        mat._14 = pos.x;
+        mat._24 = pos.y;
+        mat._34 = pos.z;
+        return mat;
+    }
     scale_matrix       := scale(IDENTITY, sc);
     rotation_matrix    := rotate(IDENTITY, RAD_PER_DEG * rot);
     translation_matrix := translate(IDENTITY, pos);
     return translation_matrix * rotation_matrix * scale_matrix;
 }
 
-make_matrix :: (pos : Vector2, rot : f32 = 0, sc := ONE_2D) -> Matrix4 {
+make_matrix :: (pos: Vector2, rot: f32 = 0, sc := ONE_2D) -> Matrix4 {
+    // Small opt
+    if rot == 0 {
+        mat := IDENTITY;
+        mat._11 = sc.x;
+        mat._22 = sc.y;
+        mat._33 = 1;
+        mat._14 = pos.x;
+        mat._24 = pos.y;
+        return mat;
+    }
     scale_matrix       := scale(IDENTITY, .{sc.x, sc.y, 0 });
     rotation_matrix    := rotate_z(IDENTITY, RAD_PER_DEG * rot);
     translation_matrix := translate(IDENTITY, .{pos.x, pos.y, 0 });
