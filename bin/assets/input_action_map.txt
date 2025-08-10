@@ -1,0 +1,4 @@
+TOGGLE_PLAY           : .LALT, ._1
+TOGGLE_PAUSE          : .LALT, ._2
+NEXT_FRAME            : .LALT, ._3
+TOGGLE_SHOW_COLLIDERS : .LALT, ._4

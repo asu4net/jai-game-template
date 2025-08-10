@@ -14,6 +14,10 @@ main :: () {
 
         atlas_animation_step(*anim);     
         
+        if performed(.TOGGLE_PLAY) {
+            print("Yayyy!");
+        }
+        
         draw_frame(() {
             draw_quad(.{ transform = make_matrix(goblin_pos), size = .{ 10, 10 }, image = anim.current, pixel_id = 1 });
             

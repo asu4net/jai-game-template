@@ -1,3 +1,9 @@
+performed :: is_input_action_pressed; 
+
+is_input_action_pressed :: inline (s: Input_Action) -> bool {
+    return input_actions_pressed[s];
+}
+
 is_input_action_down :: (s: Input_Action) -> bool {
     pressed : bool;
     keys := INPUT_ACTION_MAP[s];
@@ -18,10 +24,6 @@ update_input_actions :: () {
     }
 
     memcpy(*input_actions_prev, *input_actions_down, Input_Action.COUNT.(s64) * size_of(bool));
-}
-
-is_input_action_pressed :: inline (s: Input_Action) -> bool {
-    return input_actions_pressed[s];
 }
 
 #insert #run generate_comp_time_input_map();
@@ -64,7 +66,7 @@ INPUT_ENUM_ELEM :: #string SCOPE
 SCOPE
 
 INPUT_ENTRY_CODE :: #string SCOPE
-    % = .[%]
+    % = .[%],
 SCOPE
 
 generate_comp_time_input_map :: () -> string {
@@ -73,7 +75,7 @@ generate_comp_time_input_map :: () -> string {
     default_code :: inline () -> string {
         return sprint(INPUT_MAP_CODE, "", "", "");
     }
-    
+
     cwd := get_working_directory();
 
     ASSETS_DIR :: "bin/assets";
@@ -87,13 +89,29 @@ generate_comp_time_input_map :: () -> string {
     set_working_directory("bin");
     defer set_working_directory(cwd);
     
-    INPUT_ACTION_MAP_SRC :: "input_action_map.txt";
+    INPUT_ACTION_MAP_SRC :: "assets/input_action_map.txt";
 
     log("Looking for input action map in [%]", INPUT_ACTION_MAP_SRC);
     if File_Utils.file_exists(INPUT_ACTION_MAP_SRC) {
         log("Input action map found.");
-        map_str := File.read_entire_file(INPUT_ACTION_MAP_SRC);
-        return default_code();    
+        config := File.read_entire_file(INPUT_ACTION_MAP_SRC);
+        
+        enum_builder: String_Builder;
+        map_builder: String_Builder;
+
+        lines := String.split(config, "\n");
+        for line: lines if line.count {
+            parts := String.split(line, ":");
+            assert(parts.count > 1, "invalid line: %", it_index);
+            name  := String.to_upper_copy(String.trim(parts[0]));
+            value := String.to_upper_copy(String.trim(parts[1]));
+            String.print_to_builder(*enum_builder, INPUT_ENUM_ELEM, name);
+            String.print_to_builder(*map_builder, INPUT_ENTRY_CODE, name, value);
+        }
+        return sprint(INPUT_MAP_CODE, 
+            String.builder_to_string(*enum_builder), 
+            String.builder_to_string(*map_builder)
+        );    
     }
     
     log("Input action map not found.");

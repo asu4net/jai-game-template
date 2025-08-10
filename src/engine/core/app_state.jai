@@ -43,6 +43,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
 keep_running :: () -> bool {
     using app := get_app();
     process_window_events(*window, *done);
+    update_input_actions();
     // Update viewport size.
     update_viewport_and_frame_buffer();
     // Update frametime.
