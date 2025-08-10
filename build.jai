@@ -47,6 +47,7 @@ clone_dependencies :: () {
     try_clone_dependency("ImGui"       ,"https://github.com/asu4net/ImGui");
     try_clone_dependency("StbTrueType" ,"https://github.com/asu4net/StbTrueType");
     try_clone_dependency("Jaison"      ,"https://github.com/rluba/jaison");
+    try_clone_dependency("Enum_Array"  ,"https://github.com/rezich/Enumerated_Array");
     
     copy_file("SDL3/windows/bin/x64/SDL3.dll", "../bin/SDL3.dll");
     copy_file("StbTrueType/libstbtruetype.dll", "../bin/libstbtruetype.dll");

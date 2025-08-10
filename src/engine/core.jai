@@ -4,6 +4,8 @@
 #load "core/keycode.jai";
 #load "core/backend/sdl/window.jai";
 #load "core/backend/sdl/input.jai";
+#load "core/input_action.jai";
+
 
 #if IMGUI then {
      #load "core/imgui.jai";
