@@ -30,6 +30,8 @@ Frame_Buffer :: struct {
     depth_attachment: u32;
 }
 
+is_frame_buffer_initialized :: inline (using fb: *Frame_Buffer) -> bool { return fbo != 0; };
+
 init_frame_buffer :: (fb: *Frame_Buffer, spec: Frame_Buffer.Spec) {
     fb.spec = spec;
 
@@ -53,7 +55,7 @@ deinit_frame_buffer :: (using fb: *Frame_Buffer) {
 }
 
 invalidate_frame_buffer :: (fb: *Frame_Buffer) {
-    if fb.fbo != 0 {
+    if is_frame_buffer_initialized(fb) {
         glDeleteFramebuffers(1, *fb.fbo);
         glDeleteTextures(xx fb.color_attachments.count, fb.color_attachments.data);
         glDeleteTextures(1, *fb.depth_attachment);

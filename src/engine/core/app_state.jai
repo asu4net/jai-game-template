@@ -8,8 +8,7 @@ App_State :: struct {
     done     : bool;
     window   : Window;
     g_ctx    : Graphics_Context;
-    screen_w : int;
-    screen_h : int;
+    viewport : Vector2;
     fb       : Frame_Buffer;
     fb_tex   : Texture;
     pixel_id : int;
@@ -31,24 +30,10 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true) -> bool
     init_window(*window, name, width, height, vsync);
     g_ctx = create_graphics_context(window.handle);
 
-    screen_w = width;
-    screen_h = height;
-    
     #if IMGUI then imgui_init(window, g_ctx);
     init_renderer2d();
-
     // Frame buffer
-    init_frame_buffer(*fb, .{
-        width  = width,
-        height = height,
-        attachments = .[ .{.RGBA8}, .{.RED_INTEGER}, .{.DEPTH24STENCIL8} ]
-    });
-    
-    // This is a bit hacky, sorry.
-    fb_tex.id = fb.color_attachments[0];
-    fb_tex.spec.width =  xx width;
-    fb_tex.spec.height = xx height;
-
+    update_viewport_and_frame_buffer();
     return true;
 }
 
@@ -56,14 +41,7 @@ keep_running :: () -> bool {
     using app := get_app();
     process_window_events(*window, *done);
     // Update viewport size.
-    if screen_w != window.width || screen_h != window.height {
-        screen_w = window.width;
-        screen_h = window.height;
-        resize_frame_buffer(*fb, screen_w, screen_h);
-    }
-    camera := *context.renderer2d.camera;
-    camera.viewport_w = screen_w;
-    camera.viewport_h = screen_h;
+    update_viewport_and_frame_buffer();
     // Update frametime.
     time_step();
     return !app.done;
@@ -120,9 +98,9 @@ get_pixel_id :: inline () -> int {
 
 get_mouse_world_pos :: inline () -> Vector2 {
     using app := get_app();
-    pv := context.renderer2d.camera.ortho_world;
+    pv := context.renderer2d.pv_matrix_world;
     mouse_pos := get_mouse_pos();
-    return screen_to_world(pv, mouse_pos, .{ xx screen_w, xx screen_h });
+    return screen_to_world(pv, mouse_pos, viewport);
 }
 
 #scope_file
@@ -130,6 +108,29 @@ get_mouse_world_pos :: inline () -> Vector2 {
 update_pixel_id :: inline () {
     using app := get_app();
     mouse_pos := get_mouse_pos();
-    mouse_pos.y = screen_h - mouse_pos.y - 1;
+    mouse_pos.y = viewport.y - mouse_pos.y - 1;
     pixel_id = read_pixel(*fb, xx Attachment.PX_ID, mouse_pos);
+}
+
+update_viewport_and_frame_buffer :: () {
+    using app := get_app();
+    if viewport.x.(int) != window.width || viewport.y.(int) != window.height {
+        using app := get_app();
+        viewport.x = xx window.width;
+        viewport.y = xx window.height;
+        set_renderer2d_viewport(viewport);
+        if !is_frame_buffer_initialized(*fb) {
+            spec := Frame_Buffer.Spec.{
+                width  = xx viewport.x,
+                height = xx viewport.y,
+                attachments = .[ .{.RGBA8}, .{.RED_INTEGER}, .{.DEPTH24STENCIL8} ]
+            };
+            init_frame_buffer(*fb, spec);
+            // This is a bit hacky, sorry.
+            fb_tex.id = fb.color_attachments[0];
+            fb_tex.spec.width  = xx viewport.x;
+            fb_tex.spec.height = xx viewport.y;
+        }
+        resize_frame_buffer(*fb, xx viewport.x, xx viewport.y);
+    }
 }

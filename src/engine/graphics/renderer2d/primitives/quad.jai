@@ -107,11 +107,11 @@ draw_gui_quad :: (mat := IDENTITY, tex: *Texture = null, tiling := ONE_2D, size 
         flip_quad_vertex_uv(*vertex_uvs, xx .FLIP_X & flags, xx .FLIP_Y & flags);
     }
 
-    p := Vector2.{ xx state.camera.viewport_w, xx state.camera.viewport_h };
+    p := viewport;
 
     if flags & .AUTOSIZE {
-        coef_x := state.camera.viewport_w.(f32) / state.gui_width;
-        coef_y := state.camera.viewport_h.(f32) / state.gui_height;
+        coef_x := viewport / viewport_gui;
+        coef_y := viewport / viewport_gui;
         coef := min(coef_x, coef_y);
         p = multiply(pixel_size * coef, size);
     }

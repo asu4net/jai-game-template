@@ -1,14 +1,25 @@
+Projection_Type :: enum {
+    NONE;
+    ORTHO_WORLD;
+    ORTHO_SCREEN;
+}
+
 Renderer2D :: struct {
     white_texture    : Texture;
     atlas_texture    : Texture;
     tex_slots        : [MAX_TEXTURE_SLOTS] s32;
     textures_to_bind : [MAX_TEXTURE_SLOTS]*Texture;
     last_tex_slot    : s32;
-    camera           : Camera;
     curr_blend       : Blend;
     curr_primitive   : Primitive_Type;
-    gui_width        : int = 1920;
-    gui_height       : int = 1080;
+    
+    // Camera stuff
+    curr_projection  : Projection_Type;
+    projection_data  : Projection_Data;
+    viewport         : Vector2;
+    viewport_gui     : Vector2 = .{ 1920, 1080 };
+    pv_matrix_screen : Matrix4 = IDENTITY; 
+    pv_matrix_world  : Matrix4 = IDENTITY; 
     
     // Quad
     quad_ibo         : Index_Buffer;
@@ -127,20 +138,32 @@ deinit_renderer2d :: () {
     free(state);
 }
 
-draw_primitive2d :: inline (primitive_type : Primitive_Type, camera_mode : CameraMode, blend_mode : Blend) {
+set_renderer2d_viewport :: inline (size: Vector2) {
+    using state := context.renderer2d;
+    viewport = size;
+    pv_matrix_screen = ortho_screen_projection(viewport);
+}
+
+// calc the matrix
+set_renderer2d_projection_data :: inline (data: Projection_Data = .{}) {
+    using state := context.renderer2d;
+    projection_data = data;
+}
+
+draw_primitive2d :: inline (primitive_type: Primitive_Type, projection_type: Projection_Type, blend_mode: Blend) {
     assert(context.renderer2d != null);
     
     using state := context.renderer2d;
     
-    if curr_blend     != .NONE && curr_blend     != blend_mode     ||
-       curr_primitive != .NONE && curr_primitive != primitive_type ||
-       camera.mode    != .NONE && camera.mode    != camera_mode {
+    if curr_blend      != .NONE && curr_blend      != blend_mode     ||
+       curr_primitive  != .NONE && curr_primitive  != primitive_type ||
+       curr_projection != .NONE && curr_projection != projection_type {
         flush_renderer2d();
     }
     
-    curr_blend     = blend_mode;
-    curr_primitive = primitive_type;
-    camera.mode    = camera_mode;
+    curr_blend      = blend_mode;
+    curr_primitive  = primitive_type;
+    curr_projection = projection_type;
     
     if primitive_type == {
         case .QUAD;     assert(quad_count   <= MAX_2D_PRIMITIVES_PER_BATCH);
@@ -152,10 +175,19 @@ flush_renderer2d :: () {
     using state := context.renderer2d;
     assert(state != null);
     
-    // Submit data to gpu
-    update_render_camera(*camera);
     if curr_blend != .NONE then set_blend_mode(curr_blend);
-    
+
+    pv_matrix := IDENTITY;
+    if curr_projection == {
+        case .ORTHO_WORLD;  {
+            pv_matrix_world = ortho_world_projection(viewport, projection_data);
+            pv_matrix = pv_matrix_world;
+        }
+        case .ORTHO_SCREEN; pv_matrix = pv_matrix_screen;
+    }
+
+    set_viewport(xx viewport.x, xx viewport.y);
+
     bind_textures :: inline () {
         using state := context.renderer2d;
         for i: 0..last_tex_slot - 1 {
@@ -169,13 +201,13 @@ flush_renderer2d :: () {
             bind_textures();
             bind(*quad_shader);
             set_constant_sampler2d(*quad_shader, "u_Textures[0]", tex_slots, MAX_TEXTURE_SLOTS);
-            set_constant_matrix4(*quad_shader, "u_ProjectionView", get_matrix(camera));
+            set_constant_matrix4(*quad_shader, "u_ProjectionView", pv_matrix);
             set_vertex_buffer_data(*quad_vbo, *quad_batch[0], xx (size_of(Quad_Vertex) * VERTICES_PER_2D_PRIMITIVE * quad_count));
             draw_elements(*quad_vao, quad_index_count);
         }
         case .CIRCLE; {
             bind(*circle_shader);
-            set_constant_matrix4(*circle_shader, "u_ProjectionView", get_matrix(camera));
+            set_constant_matrix4(*circle_shader, "u_ProjectionView", pv_matrix);
             set_vertex_buffer_data(*circle_vbo, *circle_batch[0], xx (size_of(Circle_Vertex) * VERTICES_PER_2D_PRIMITIVE * circle_count));
             draw_elements(*circle_vao, circle_index_count);
         }
@@ -185,7 +217,7 @@ flush_renderer2d :: () {
     last_tex_slot      = 0;
     curr_blend         = .NONE;
     curr_primitive     = .NONE;
-    camera.mode        = .NONE;
+    curr_projection    = .NONE;
     quad_count         = 0;
     quad_index_count   = 0;
     circle_count       = 0;

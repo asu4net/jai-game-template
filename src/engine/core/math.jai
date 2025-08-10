@@ -182,3 +182,27 @@ screen_to_world :: (pv: Matrix4, screen_point: Vector2, window_size: Vector2) ->
 
     return Vector2.{world_point.x, world_point.y };
 }
+
+Projection_Data :: struct {
+    eye    := ZERO_3D;
+    near   := (-1).(f32);
+    far    := (+1).(f32);
+    front  := FRONT_3D;
+    right  := RIGHT_3D;
+    up     := UP_3D;
+    
+    // 2D Specific
+    size: f32 = 1;
+}
+
+ortho_world_projection :: inline (viewport: Vector2, using camera: Projection_Data) -> Matrix4 {
+    aspect := viewport.x / viewport.y;
+    limit  := aspect * size;
+    p := orthographic_projection_matrix(-limit, limit, -size, size, near, far);
+    v := look_at(eye, front, right, up);
+    return p * v;
+}
+
+ortho_screen_projection :: inline (screen_size: Vector2) -> Matrix4 {
+    return orthographic_projection_matrix(0, screen_size.x, screen_size.y, 0, -1.0, 1.0);
+}

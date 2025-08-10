@@ -18,8 +18,8 @@ draw_gui_text :: (pos := ZERO_2D, ang := (0).(f32), scl := ONE_2D, text := "", f
         d := *glyph.quad;
         fill_glyph(font, *glyph, c);
         
-        coef_x := state.camera.viewport_w / state.gui_width;
-        coef_y := state.camera.viewport_h / state.gui_height;
+        coef_x := viewport.x / viewport_gui.x;
+        coef_y := viewport.y / viewport_gui.y;
         coef := (min(coef_x, coef_y)).(f32);
 
         vertex_positions[0] = .{d.x0 * coef + x_pos, d.y1 * coef + y_pos, 0, 1};
