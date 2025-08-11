@@ -36,7 +36,11 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
     #if IMGUI then imgui_init(window, g_ctx);
     init_renderer2d();
 
-    #if ECS then init_entity_storage();
+    #if ECS then {
+        init_entity_storage();
+        init_collisions2d();
+        init_damage_registry();
+    }
 
     // Frame buffer
     update_viewport_and_frame_buffer();
@@ -54,6 +58,17 @@ keep_running :: () -> bool {
     return !app.done;
 }
 
+#if ECS {
+    tick_app :: inline (pre_collisions: () = null, post_collisions: () = null) {
+        tick_timer_entities();
+        move_entities();
+        if pre_collisions then pre_collisions();
+        query_2d_collisions();
+        query_damage_collisions();
+        if post_collisions then post_collisions();
+    }
+}
+
 draw_frame :: inline (proc: () = null) {
     using app := get_app();
     // Start using the frame buffer before drawing.
@@ -62,6 +77,10 @@ draw_frame :: inline (proc: () = null) {
     clear_frame_buffer_color_and_depth(tint = clear_color);
     // Clear last frame buffer.
     clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
+    // ECS draw
+    #if ECS {
+        draw_sprite_entities();
+    }
     // User draw.
     if proc then proc();
     // Draw all the stuff to the frame buffer.
@@ -79,7 +98,11 @@ draw_frame :: inline (proc: () = null) {
 end_app :: () -> bool {
     if !is_app() then return false;
     using app := get_app();
-    #if ECS then deinit_entity_storage();
+    #if ECS then {
+        deinit_damage_registry();
+        deinit_collisions2d();
+        deinit_entity_storage();
+    }
     // This texture is managed by the fb, there is no need to delete it.
     Initialize(*fb_tex);
     deinit_frame_buffer(*fb);

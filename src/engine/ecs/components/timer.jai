@@ -10,22 +10,23 @@ Timer_Component :: struct @Component @InitOrder(1000)  {
 
 // not init
 start_timer_component :: (entity : Entity, finished_cbk : ON_END_CBK) {
-
     using timer := get_component(Timer_Component, entity);
     started               = true;
     current_time          = 0;
     on_end_cbk = finished_cbk;
 }
 
-update_timer_component :: (entity : Entity) {
+tick_timer_entities :: () {
+    view := get_entity_view(Timer_Component);
+    for entity: view {
+        using timer  := get_component(Timer_Component, entity);
 
-    using timer  := get_component(Timer_Component, entity);
+        if (!started) { return; }
 
-    if (!started) { return; }
-
-    current_time += frame_time();
-    if (current_time > time) {
-        started = false;
-        on_end_cbk(entity);
+        current_time += frame_time();
+        if (current_time > time) {
+            started = false;
+            on_end_cbk(entity);
+        }
     }
 }

@@ -12,12 +12,14 @@ main :: () {
     while keep_running() {
         defer end_frame();
 
+        tick_app();
+
         atlas_animation_step(*anim);     
         
         if performed(.TOGGLE_PLAY) {
             print("Yayyy!");
         }
-        
+
         draw_frame(() {
             draw_quad(.{ transform = make_matrix(goblin_pos), size = .{ 10, 10 }, image = anim.current, pixel_id = 1 });
             
@@ -35,7 +37,7 @@ main :: () {
                 imgui_text("Selected: %", get_pixel_id());
                 imgui_text("Pos: %", goblin_pos);
                 imgui_end();
-
+                
                 #if EDITOR {
                     draw_editor();
                 }

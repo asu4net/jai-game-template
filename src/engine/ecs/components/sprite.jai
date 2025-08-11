@@ -11,20 +11,34 @@ Sprite_Component :: struct @Component {
     rect     := Rect.{};     @JsonIgnore @EditorReadOnly 
 }
 
-draw_sprite_entity :: (entity: Entity) {
+draw_sprite_entities :: () {
+    view := get_entity_view(Transform2D_Component, Sprite_Component);
 
-    using transform := get_component(Transform2D_Component, entity);
-    using sprite    := get_component(Sprite_Component,      entity);
-    
-    if !visible then return;
-    
-    if has_component(Blink_Component, entity)
-    then update_blink(get_component(Blink_Component, entity), *tint);
+    for entity: view {
+        using transform := get_component(Transform2D_Component, entity);
+        using sprite    := get_component(Sprite_Component,      entity);
+        
+        if !visible then return;
+        
+        if has_component(Blink_Component, entity)
+        then update_blink(get_component(Blink_Component, entity), *tint);
 
-    flags : QuadFlag;
-    if autosize        then flags |= .AUTOSIZE;
-    if flip_x          then flags |= .FLIP_X;
-    if flip_y          then flags |= .FLIP_Y;
+        flags: QuadFlag;
+        
+        if autosize        then flags |= .AUTOSIZE;
+        if flip_x          then flags |= .FLIP_X;
+        if flip_y          then flags |= .FLIP_Y;
 
-    draw_quad(.{ transform = get_matrix(entity), blend = blend, tint = tint, size = size, image = image, pixel_id = xx entity, flags = flags });
+        sprite_quad := Quad.{
+            transform = get_matrix(entity), 
+            blend     = blend, 
+            tint      = tint, 
+            size      = size, 
+            image     = image, 
+            pixel_id  = xx entity, 
+            flags     = flags
+        };
+
+        draw_quad(sprite_quad);
+    }
 }
