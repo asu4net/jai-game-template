@@ -35,6 +35,9 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
 
     #if IMGUI then imgui_init(window, g_ctx);
     init_renderer2d();
+
+    #if ECS then init_entity_storage();
+
     // Frame buffer
     update_viewport_and_frame_buffer();
     return true;
@@ -76,13 +79,14 @@ draw_frame :: inline (proc: () = null) {
 end_app :: () -> bool {
     if !is_app() then return false;
     using app := get_app();
-    set_app(null);
+    #if ECS then deinit_entity_storage();
     // This texture is managed by the fb, there is no need to delete it.
     Initialize(*fb_tex);
     deinit_frame_buffer(*fb);
     deinit_renderer2d();
     #if IMGUI then imgui_deinit();
     destroy_graphics_context(*g_ctx);
+    set_app(null);
     free(app);
     #if DEBUG then report_memory_leaks();
     return true;
@@ -90,6 +94,7 @@ end_app :: () -> bool {
 
 end_frame :: inline () {
     using app := get_app();
+    #if ECS then clean_destroyed_entities();
     reset_temporary_storage();
     swap_buffers(*window);
 }

@@ -35,6 +35,10 @@ main :: () {
                 imgui_text("Selected: %", get_pixel_id());
                 imgui_text("Pos: %", goblin_pos);
                 imgui_end();
+
+                #if EDITOR {
+                    draw_editor();
+                }
             });
         }
     }
