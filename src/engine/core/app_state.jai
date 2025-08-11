@@ -51,7 +51,7 @@ keep_running :: () -> bool {
     return !app.done;
 }
 
-draw_frame :: inline (proc: ()) {
+draw_frame :: inline (proc: () = null) {
     using app := get_app();
     // Start using the frame buffer before drawing.
     bind_frame_buffer(*fb);
@@ -60,7 +60,7 @@ draw_frame :: inline (proc: ()) {
     // Clear last frame buffer.
     clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
     // User draw.
-    proc();
+    if proc then proc();
     // Draw all the stuff to the frame buffer.
     flush_renderer2d();
     // Read the cursor pixel id.

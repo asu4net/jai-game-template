@@ -43,7 +43,7 @@ process_imgui_events :: inline (event : SDL_Event) {
     ImGui.ImplSDL3_ProcessEvent(*event);
 }
 
-draw_imgui :: inline (proc : ()) {
+draw_imgui :: inline (proc : () = null) {
     ImGui.ImplOpenGL3_NewFrame();
     ImGui.ImplSDL3_NewFrame();
     ImGui.NewFrame();
@@ -81,7 +81,7 @@ draw_imgui :: inline (proc : ()) {
     }
 
     // User draw.
-    proc();
+    if proc then proc();
     
     if ImGui.GetIO().ConfigFlags_ & .DockingEnable
     then ImGui.End(); // Viewport end.

@@ -3,10 +3,14 @@
 #import "File";
 String :: #import "String";
 
+#load "src/engine/ecs/generate.jai";
+
 Build_Flags :: enum_flags {
     DEBUG;
     RELEASE;
     IMGUI;
+    EDITOR;
+    ECS;
 }
 
 Build_Args :: struct {
@@ -19,10 +23,10 @@ Build_Args :: struct {
 #run {
     set_build_options_dc(.{do_output=false});
     clone_dependencies();
-    build_args : Build_Args;
+    build_args: Build_Args;
     collect_build_args(*build_args);
     w := setup_workspace(build_args);
-    wait_until_workspace_has_finished(w);
+    wait_until_workspace_has_finished(w, build_args);
     reset_temporary_storage();
 }
 
@@ -47,6 +51,8 @@ clone_dependencies :: () {
     try_clone_dependency("ImGui"       ,"https://github.com/asu4net/ImGui");
     try_clone_dependency("StbTrueType" ,"https://github.com/asu4net/StbTrueType");
     try_clone_dependency("Jaison"      ,"https://github.com/rluba/jaison");
+    try_clone_dependency("Queue"       ,"https://github.com/asu4net/Queue");
+    try_clone_dependency("Sparse_Set"  ,"https://github.com/asu4net/Sparse_Set");
     try_clone_dependency("Enum_Array"  ,"https://github.com/rezich/Enumerated_Array");
     
     copy_file("SDL3/windows/bin/x64/SDL3.dll", "../bin/SDL3.dll");
@@ -70,11 +76,13 @@ collect_build_args :: (using build_args: *Build_Args) {
         arg := String.to_lower_copy(it ,,temp);
         // Collect args.
         if arg == {
-            case "-n"; collect_field = (using a: *Build_Args, field: string) { exec_name = field; };
-            case "-o"; collect_field = (using a: *Build_Args, field: string) { out_dir = field; };
-            case "-f"; collect_field = (using a: *Build_Args, field: string) { build_file = field; };
-            case "-r"; flags |= .RELEASE;
-            case "-i"; flags |= .IMGUI;
+            case "-name";     collect_field = (using a: *Build_Args, field: string) { exec_name = field; };
+            case "-out";      collect_field = (using a: *Build_Args, field: string) { out_dir = field; };
+            case "-file";     collect_field = (using a: *Build_Args, field: string) { build_file = field; };
+            case "-release";  flags |= .RELEASE;
+            case "-imgui";    flags |= .IMGUI;
+            case "-editor";   flags |= .EDITOR;
+            case "-ecs";      flags |= .ECS;
             case; log("Unrecognized option % \n", arg);
         }
     }
@@ -97,16 +105,20 @@ setup_workspace :: (build_args : Build_Args) -> Workspace {
     }
     set_build_options(options, w);
     add_build_file(build_args.build_file, w);
-    add_build_string(tprint("DEBUG :: %;", (build_args.flags & .DEBUG).(bool)), w);
-    add_build_string(tprint("IMGUI :: %;", (build_args.flags & .IMGUI).(bool)), w);
+    add_build_string(tprint("DEBUG  :: %;", (build_args.flags & .DEBUG)  .(bool)), w);
+    add_build_string(tprint("IMGUI  :: %;", (build_args.flags & .IMGUI)  .(bool)), w);
+    add_build_string(tprint("EDITOR :: %;", (build_args.flags & .EDITOR) .(bool)), w);
+    add_build_string(tprint("ECS    :: %;", (build_args.flags & .ECS)    .(bool)), w);
     return w;
 }
 
-wait_until_workspace_has_finished :: (w: Workspace) {
+wait_until_workspace_has_finished :: (w: Workspace, args: Build_Args) {
     log("Building %...", get_build_options(w).output_executable_name);
     ended_with_errors := false;
+    ecs := (args.flags & .ECS).(bool);
     while true {
         message := compiler_wait_for_message();
+        if ecs then entity_process_compiler_message(w, message);
         if message.kind == .COMPLETE {
             log("Done building.");
             break;
