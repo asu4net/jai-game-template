@@ -63,6 +63,7 @@ keep_running :: () -> bool {
         tick_timer_entities();
         move_entities();
         if pre_collisions then pre_collisions();
+        tick_atlas_animations();
         query_2d_collisions();
         query_damage_collisions();
         if post_collisions then post_collisions();

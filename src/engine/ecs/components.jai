@@ -3,10 +3,9 @@
 #load "components/2d_collider.jai";
 #load "components/blink.jai";
 #load "components/sprite.jai";
-#load "components/flipbook.jai";
 #load "components/timer.jai";
 #load "components/damage.jai";
-#load "components/projectile.jai";
+#load "components/atlas_animation.jai";
 
 // GUI stuff
 #load "components/gui/gui_text.jai";
