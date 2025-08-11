@@ -562,7 +562,7 @@ dlz_component :: ($T : Type, entity : Entity, s : string) -> *T {
     return add_component_with_data(parsed_data, entity);  
 }
 
-#if EDITOR {
+#if EDITOR && IMGUI {
     drw_component :: ($T : Type, entity : Entity) {
         EntityStorageContext();
         c := get_component(T, entity);

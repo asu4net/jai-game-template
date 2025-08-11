@@ -41,7 +41,7 @@ init_component_procs :: (using procs: *Component_Procs, $T : Type) {
     dlz = (e: Entity, s: string) -> *void {
         return dlz_component(T, e, s);
     }
-    #if EDITOR {
+    #if EDITOR && IMGUI {
         drw = (e: Entity) {
             drw_component(T, e);
         }

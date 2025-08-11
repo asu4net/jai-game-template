@@ -6,7 +6,7 @@
       {
         "label": "build",
         "command": "jai",
-        "args": ["build.jai", "-x64", "-", "-name", "game", "-imgui", "-editor", "-ecs"],
+        "args": ["build.jai", "-x64", "-", "-imgui", "-editor", "-ecs"],
         "presentation": {
           "reveal": "always",
           "clear": true

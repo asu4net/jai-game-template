@@ -26,14 +26,16 @@ main :: () {
             }
         });
         
-        draw_imgui(() {
-            imgui_begin("Goblin");
-            imgui_text("Time: %", anim.time);
-            imgui_text("Duration: %", anim.step);
-            imgui_text("Current: %", anim.current);
-            imgui_text("Selected: %", get_pixel_id());
-            imgui_text("Pos: %", goblin_pos);
-            imgui_end();
-        });
+        #if IMGUI {
+            draw_imgui(() {
+                imgui_begin("Goblin");
+                imgui_text("Time: %", anim.time);
+                imgui_text("Duration: %", anim.step);
+                imgui_text("Current: %", anim.current);
+                imgui_text("Selected: %", get_pixel_id());
+                imgui_text("Pos: %", goblin_pos);
+                imgui_end();
+            });
+        }
     }
 }
