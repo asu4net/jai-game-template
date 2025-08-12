@@ -71,7 +71,6 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         init_damage_registry();
     }
 
-    // Frame buffer
     update_viewport_and_frame_buffer();
 
     cbk := app_callbacks();
@@ -86,10 +85,11 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         cbk.begin();
     }
 
-    // Main loop
-    while keep_running() {
+    while !done {
         
-        // Tick the logic
+        time_step();
+        process_window_events(*window, *done);
+        update_input_actions();
 
         #if EDITOR {
             tick_frame_by_frame_mode();
@@ -97,10 +97,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             then toggle_play();
         }
         
-        if should_tick_logic() {
-            // User tick
-            cbk.tick();
-        }
+        if should_tick_logic() then cbk.tick();
         
         #if ECS {
             tick_timer_components();
@@ -112,38 +109,28 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             }
         }
 
-        // Draw one frame
-
-        // Start using the frame buffer before drawing.
+        update_viewport_and_frame_buffer();
         bind_frame_buffer(*fb);
-        // Clear color buffer.
         clear_frame_buffer_color_and_depth(tint = clear_color);
-        // Clear last frame buffer.
         clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
-        // ECS draw
-        #if ECS {
-            draw_sprite_entities();
-        }
-        // User draw.
+        #if ECS then draw_sprite_entities();
         if cbk.draw then cbk.draw();
-        // Draw all the stuff to the frame buffer.
         flush_renderer2d();
-        // Read the cursor pixel id.
-        update_pixel_id();
-        // Stop using the frame buffer.
+        
+        // Update the pixel id
+        mouse_pos := get_mouse_pos();
+        mouse_pos.y = viewport.y - mouse_pos.y - 1;
+        pixel_id = read_pixel(*fb, xx Attachment.PX_ID, mouse_pos);
+        
         unbind_frame_buffer();
-        // Prepare the frame buffer quad.
         draw_gui_quad(tex = *fb_tex); 
-        // Draw the frame buffer quad to the screen buffer.
         flush_renderer2d();
-        // Draw imgui
+        
         #if IMGUI then draw_imgui();
         
         // Cleanup
-        
         #if ECS then clean_destroyed_entities();
         reset_temporary_storage();
-        // Swap buffers
         swap_buffers(*window);
     }    
 }
@@ -196,17 +183,6 @@ end_app :: () -> bool {
     return true;
 }
 
-keep_running :: () -> bool {
-    using app := get_app();
-    process_window_events(*window, *done);
-    update_input_actions();
-    // Update viewport size.
-    update_viewport_and_frame_buffer();
-    // Update frametime.
-    time_step();
-    return !app.done;
-}
-
 tick_frame_by_frame_mode :: inline () {
     #if EDITOR {
         using app := get_app();
@@ -226,13 +202,6 @@ should_tick_logic :: inline () -> bool {
     #if EDITOR 
     then return next_frame && running_logic;
     else return running_logic;
-}
-
-update_pixel_id :: inline () {
-    using app := get_app();
-    mouse_pos := get_mouse_pos();
-    mouse_pos.y = viewport.y - mouse_pos.y - 1;
-    pixel_id = read_pixel(*fb, xx Attachment.PX_ID, mouse_pos);
 }
 
 update_viewport_and_frame_buffer :: () {
