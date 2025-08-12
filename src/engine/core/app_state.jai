@@ -104,6 +104,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         #if ECS {
             tick_timer_components();
             tick_atlas_animation_components();
+
             if should_tick_logic() {
                 tick_movement_component();
                 tick_collision2d_components();
