@@ -1,10 +1,10 @@
 #load "src/engine.jai";
 
 main :: () {
-    using app_callbacks();
-    begin = begin_play; 
-    end   = end_play;
-    tick  = tick_game;
+    c := app_callbacks();
+    c.begin = begin_play; 
+    c.end   = end_play;
+    c.tick  = tick_game;
     run_app(name = "Game?");
 }
 
