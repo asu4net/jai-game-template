@@ -1,10 +1,15 @@
 CollisionFlag :: enum_flags u16 {
     NONE;
-    PLAYER;
-    PLAYER_BULLET;
-    ENEMY;
-    ENEMY_BULLET;
-    PICK_UP;
+    _1;
+    _2;
+    _3;
+    _4;
+    _5;
+    _6;
+    _7;
+    _8;
+    _9;
+    _10;
 }
 
 CollisionEventEnter :: struct {

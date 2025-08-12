@@ -98,7 +98,8 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             then toggle_play();
         }
         
-        if should_tick_logic() then cbk.tick();
+        if should_tick_logic() && cbk.tick 
+        then cbk.tick();
         
         #if ECS {
             tick_timer_components();
@@ -110,7 +111,8 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             }
         }
         
-        if should_tick_logic() then cbk.late_tick();
+        if should_tick_logic() && cbk.late_tick 
+        then cbk.late_tick();
 
         update_viewport_and_frame_buffer();
         bind_frame_buffer(*fb);
