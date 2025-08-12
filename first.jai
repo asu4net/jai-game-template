@@ -1,10 +1,10 @@
 #load "src/engine.jai";
 
 main :: () {
-    c := app_callbacks();
-    c.begin = begin_play; 
-    c.end   = end_play;
-    c.tick  = tick_game;
+    using app_callbacks();
+    begin = begin_play; 
+    end   = end_play;
+    tick  = tick_game;
     run_app(name = "Game?");
 }
 
@@ -16,7 +16,9 @@ begin_play :: () {
 }
 
 tick_game :: () {
-    set_pos(goblin, get_pos(goblin) + RIGHT_2D * 0.5 * frame_time());
+    if get_pixel_id() == goblin.(int) && is_mouse_button_down(.L) {
+        set_pos(goblin, get_mouse_world_pos());
+    }
 }
 
 end_play :: () {
