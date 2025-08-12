@@ -30,10 +30,11 @@ is_app  :: inline () => context.app != null;
 Callback_Proc :: #type ();
 
 App_Callbacks :: struct {
-    draw:  Callback_Proc;
-    begin: Callback_Proc;
-    end:   Callback_Proc;
-    tick:  Callback_Proc;
+    draw      : Callback_Proc;
+    begin     : Callback_Proc;
+    end       : Callback_Proc;
+    tick      : Callback_Proc;
+    late_tick : Callback_Proc;
 
     #if IMGUI {
         draw_imgui: Callback_Proc;
@@ -108,6 +109,8 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
                 tick_damage_components();
             }
         }
+        
+        if should_tick_logic() then cbk.late_tick();
 
         update_viewport_and_frame_buffer();
         bind_frame_buffer(*fb);
