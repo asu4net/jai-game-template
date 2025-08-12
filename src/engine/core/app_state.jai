@@ -75,13 +75,15 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
     update_viewport_and_frame_buffer();
 
     cbk := app_callbacks();
-
-    #if !EDITOR {
+    
+    #if EDITOR {
+        if editor_play_directly then {
+            running_logic = true;
+            cbk.begin();
+        }
+    } else {
         running_logic = true;
         cbk.begin();
-    } else {
-        if editor_play_directly
-        then cbk.begin();
     }
 
     // Main loop

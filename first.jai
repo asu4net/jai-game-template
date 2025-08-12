@@ -2,25 +2,25 @@
 
 main :: () {
     using app_callbacks();
-    begin = begin_play; 
-    end   = end_play;
-    tick  = tick_game;
+    begin = game_begin; 
+    end   = game_end;
+    tick  = game_tick;
     run_app(name = "The Goblin Game", editor_play_directly = true);
 }
 
 goblin: Entity;
 
-begin_play :: () {
+game_begin :: () {
     goblin = dlz_entity_from_file("assets/goblin.prefab");
     get_component(Atlas_Animation_Component, goblin).playing = true;
 }
 
-tick_game :: () {
+game_tick :: () {
     if get_pixel_id() == goblin.(int) && is_mouse_button_down(.L) {
         set_pos(goblin, get_mouse_world_pos());
     }
 }
 
-end_play :: () {
+game_end :: () {
     destroy_entity(goblin);
 }
