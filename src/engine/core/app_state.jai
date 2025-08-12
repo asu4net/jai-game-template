@@ -110,7 +110,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
                 tick_damage_components();
             }
         }
-        
+
         if should_tick_logic() && cbk.late_tick 
         then cbk.late_tick();
 
@@ -118,8 +118,14 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         bind_frame_buffer(*fb);
         clear_frame_buffer_color_and_depth(tint = clear_color);
         clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
-        #if ECS then draw_sprite_entities();
-        if cbk.draw then cbk.draw();
+        
+        #if ECS {
+            draw_sprite_entities();
+        } 
+        
+        if cbk.draw 
+        then cbk.draw();
+        
         flush_renderer2d();
         
         // Update the pixel id
