@@ -60,10 +60,10 @@ keep_running :: () -> bool {
 
 #if ECS {
     tick_app :: inline (pre_collisions: () = null, post_collisions: () = null) {
-        tick_timer_entities();
-        move_entities();
         if pre_collisions then pre_collisions();
+        tick_timer_entities();
         tick_atlas_animations();
+        move_entities();
         query_2d_collisions();
         query_damage_collisions();
         if post_collisions then post_collisions();
