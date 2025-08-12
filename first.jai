@@ -5,7 +5,7 @@ main :: () {
     begin = begin_play; 
     end   = end_play;
     tick  = tick_game;
-    run_app(name = "Game?");
+    run_app(name = "The Goblin Game", editor_play_directly = true);
 }
 
 goblin: Entity;

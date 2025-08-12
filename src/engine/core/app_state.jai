@@ -46,7 +46,7 @@ app_callbacks :: inline () => *context.callbacks;
 
 #run #if !DEBUG then disable_runtime_console();
 
-run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint := DARK_GREY, start := false) {
+run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint := DARK_GREY, editor_play_directly := false) {
     if is_app() then end_app();
     set_app(New(App_State));
     #if DEBUG defer end_app();
@@ -80,7 +80,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         running_logic = true;
         cbk.begin();
     } else {
-        if start
+        if editor_play_directly
         then cbk.begin();
     }
 
