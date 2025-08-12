@@ -57,7 +57,7 @@ deinit_collisions2d :: () {
     array_reset(*collisions_in_last_frame);
 }
 
-query_2d_collisions :: () {
+tick_collision2d_components :: () {
 
     using context.collisions2d;
 

@@ -8,7 +8,7 @@ Atlas_Animation_Component :: struct @Component {
     loop    : bool = false;
 }
 
-tick_atlas_animations :: () {
+tick_atlas_animation_components :: () {
     view := get_entity_view(Atlas_Animation_Component, Sprite_Component);
     for entity: view {
         anim   := get_component(Atlas_Animation_Component, entity);

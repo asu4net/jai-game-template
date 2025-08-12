@@ -5,14 +5,21 @@ Attachment :: enum u8 {
 }
 
 App_State :: struct {
-    done        : bool;
-    window      : Window;
-    g_ctx       : Graphics_Context;
-    viewport    : Vector2;
-    fb          : Frame_Buffer;
-    fb_tex      : Texture;
-    pixel_id    : int;
-    clear_color : Vector4;
+    done          : bool;
+    window        : Window;
+    g_ctx         : Graphics_Context;
+    viewport      : Vector2;
+    fb            : Frame_Buffer;
+    fb_tex        : Texture;
+    pixel_id      : int;
+    clear_color   : Vector4;
+    running_logic : bool;
+
+    #if EDITOR {
+        frame_by_frame : bool;
+        next_frame     : bool;
+        show_colliders : bool;
+    }
 }
 
 #add_context app: *App_State;
@@ -20,11 +27,29 @@ get_app :: inline () => context.app;
 set_app :: inline (app: *App_State) { context.app = app; };
 is_app  :: inline () => context.app != null; 
 
+Callback_Proc :: #type ();
+
+App_Callbacks :: struct {
+    draw:  Callback_Proc;
+    begin: Callback_Proc;
+    end:   Callback_Proc;
+    tick:  Callback_Proc;
+
+    #if IMGUI {
+        draw_imgui: Callback_Proc;
+    }
+}
+
+#add_context callbacks: App_Callbacks;
+
+app_callbacks :: inline () => *context.callbacks;
+
 #run #if !DEBUG then disable_runtime_console();
 
-run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint := DARK_GREY) -> bool {
+run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint := DARK_GREY, start := false) {
     if is_app() then end_app();
     set_app(New(App_State));
+    #if DEBUG defer end_app();
 
     using app := get_app();
     clear_color = bg_tint;
@@ -33,7 +58,11 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
     init_window(*window, name, width, height, vsync);
     g_ctx = create_graphics_context(window.handle);
 
-    #if IMGUI then imgui_init(window, g_ctx);
+    #if IMGUI then {
+        imgui_init(window, g_ctx);
+        context.imgui.callbacks.draw = context.callbacks.draw_imgui;
+    }
+
     init_renderer2d();
 
     #if ECS then {
@@ -44,83 +73,77 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
 
     // Frame buffer
     update_viewport_and_frame_buffer();
-    return true;
-}
 
-keep_running :: () -> bool {
-    using app := get_app();
-    process_window_events(*window, *done);
-    update_input_actions();
-    // Update viewport size.
-    update_viewport_and_frame_buffer();
-    // Update frametime.
-    time_step();
-    return !app.done;
-}
+    cbk := app_callbacks();
 
-#if ECS {
-    tick_app :: inline (pre_collisions: () = null, post_collisions: () = null) {
-        if pre_collisions then pre_collisions();
-        tick_timer_entities();
-        tick_atlas_animations();
-        move_entities();
-        query_2d_collisions();
-        query_damage_collisions();
-        if post_collisions then post_collisions();
+    #if !EDITOR {
+        running_logic = true;
+        cbk.begin();
+    } else {
+        if start
+        then cbk.begin();
     }
-}
 
-draw_frame :: inline (proc: () = null) {
-    using app := get_app();
-    // Start using the frame buffer before drawing.
-    bind_frame_buffer(*fb);
-    // Clear color buffer.
-    clear_frame_buffer_color_and_depth(tint = clear_color);
-    // Clear last frame buffer.
-    clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
-    // ECS draw
-    #if ECS {
-        draw_sprite_entities();
-    }
-    // User draw.
-    if proc then proc();
-    // Draw all the stuff to the frame buffer.
-    flush_renderer2d();
-    // Read the cursor pixel id.
-    update_pixel_id();
-    // Stop using the frame buffer.
-    unbind_frame_buffer();
-    // Prepare the frame buffer quad.
-    draw_gui_quad(tex = *fb_tex); 
-    // Draw the frame buffer quad to the screen buffer.
-    flush_renderer2d();
-}
+    // Main loop
+    while keep_running() {
+        
+        // Tick the logic
 
-end_app :: () -> bool {
-    if !is_app() then return false;
-    using app := get_app();
-    #if ECS then {
-        deinit_damage_registry();
-        deinit_collisions2d();
-        deinit_entity_storage();
-    }
-    // This texture is managed by the fb, there is no need to delete it.
-    Initialize(*fb_tex);
-    deinit_frame_buffer(*fb);
-    deinit_renderer2d();
-    #if IMGUI then imgui_deinit();
-    destroy_graphics_context(*g_ctx);
-    set_app(null);
-    free(app);
-    #if DEBUG then report_memory_leaks();
-    return true;
-}
+        #if EDITOR {
+            tick_frame_by_frame_mode();
+            if performed(.TOGGLE_PLAY)
+            then toggle_play();
+        }
+        
+        if should_tick_logic() {
+            // User tick
+            cbk.tick();
+        }
+        
+        #if ECS {
+            tick_timer_components();
+            tick_atlas_animation_components();
+            if should_tick_logic() {
+                tick_movement_component();
+                tick_collision2d_components();
+                tick_damage_components();
+            }
+        }
 
-end_frame :: inline () {
-    using app := get_app();
-    #if ECS then clean_destroyed_entities();
-    reset_temporary_storage();
-    swap_buffers(*window);
+        // Draw one frame
+
+        // Start using the frame buffer before drawing.
+        bind_frame_buffer(*fb);
+        // Clear color buffer.
+        clear_frame_buffer_color_and_depth(tint = clear_color);
+        // Clear last frame buffer.
+        clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
+        // ECS draw
+        #if ECS {
+            draw_sprite_entities();
+        }
+        // User draw.
+        if cbk.draw then cbk.draw();
+        // Draw all the stuff to the frame buffer.
+        flush_renderer2d();
+        // Read the cursor pixel id.
+        update_pixel_id();
+        // Stop using the frame buffer.
+        unbind_frame_buffer();
+        // Prepare the frame buffer quad.
+        draw_gui_quad(tex = *fb_tex); 
+        // Draw the frame buffer quad to the screen buffer.
+        flush_renderer2d();
+        // Draw imgui
+        #if IMGUI then draw_imgui();
+        
+        // Cleanup
+        
+        #if ECS then clean_destroyed_entities();
+        reset_temporary_storage();
+        // Swap buffers
+        swap_buffers(*window);
+    }    
 }
 
 // The current mouse-hovered pixel id.
@@ -136,7 +159,72 @@ get_mouse_world_pos :: inline () -> Vector2 {
     return screen_to_world(pv, mouse_pos, viewport);
 }
 
+toggle_play :: inline () {
+    using get_app();
+    cbk := app_callbacks();
+    if !running_logic && cbk.begin then cbk.begin();
+    else if cbk.end then cbk.end();
+    running_logic =! running_logic;
+}
+
 #scope_file
+
+end_app :: () -> bool {
+    if !is_app() then return false;
+    using app := get_app();
+    
+    if running_logic && context.callbacks.end   
+    then context.callbacks.end();
+    
+    #if ECS then {
+        deinit_damage_registry();
+        deinit_collisions2d();
+        deinit_entity_storage();
+    }
+
+    // This texture is managed by the fb, there is no need to delete it.
+    Initialize(*fb_tex);
+    deinit_frame_buffer(*fb);
+    deinit_renderer2d();
+    #if IMGUI then imgui_deinit();
+    destroy_graphics_context(*g_ctx);
+    set_app(null);
+    free(app);
+    #if DEBUG then report_memory_leaks();
+    return true;
+}
+
+keep_running :: () -> bool {
+    using app := get_app();
+    process_window_events(*window, *done);
+    update_input_actions();
+    // Update viewport size.
+    update_viewport_and_frame_buffer();
+    // Update frametime.
+    time_step();
+    return !app.done;
+}
+
+tick_frame_by_frame_mode :: inline () {
+    #if EDITOR {
+        using app := get_app();
+        if performed(.TOGGLE_PAUSE) {
+            frame_by_frame =! frame_by_frame;
+        }
+        if !frame_by_frame {
+            next_frame = true;
+            return;
+        }
+        next_frame = performed(.NEXT_FRAME);   
+    }
+}
+
+should_tick_logic :: inline () -> bool {
+    using app := get_app();
+    #if EDITOR 
+    then return next_frame && running_logic;
+    else return running_logic;
+}
 
 update_pixel_id :: inline () {
     using app := get_app();

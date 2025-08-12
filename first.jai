@@ -1,21 +1,24 @@
 #load "src/engine.jai";
 
 main :: () {
-    run_app(name = "Game?", width = 1920, height = 1080);
-    defer end_app();
+    using app_callbacks();
+    begin = begin_play; 
+    end   = end_play;
+    tick  = tick_game;
+    run_app(name = "Game?");
+}
 
-    while keep_running() {
-        defer end_frame();
+goblin: Entity;
 
-        tick_app();
-        draw_frame();
-        
-        #if IMGUI {
-            draw_imgui(() {
-                #if EDITOR {
-                    draw_editor();
-                }
-            });
-        }
-    }
+begin_play :: () {
+    goblin = dlz_entity_from_file("assets/goblin.prefab");
+    get_component(Atlas_Animation_Component, goblin).playing = true;
+}
+
+tick_game :: () {
+    set_pos(goblin, get_pos(goblin) + RIGHT_2D * 0.5 * frame_time());
+}
+
+end_play :: () {
+    destroy_entity(goblin);
 }

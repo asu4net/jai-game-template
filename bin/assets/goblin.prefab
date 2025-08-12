@@ -1,0 +1,61 @@
+
+@Entity(5107400091869227314)
+
+@Component(Entity_Info)
+{
+	"name": "goblin",
+	"flags": "LOCAL_ENABLED | ENABLED",
+	"parent": {
+		"uuid": 0
+	},
+	"children": [
+	]
+}
+
+@Component(Transform2D_Component)
+{
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"scl": {
+		"x": 1,
+		"y": 1
+	},
+	"ang": 0
+}
+
+@Component(Atlas_Animation_Component)
+{
+	"playing": false,
+	"current": "GOBLIN_IDLE_0",
+	"start": "GOBLIN_IDLE_0",
+	"end": "GOBLIN_IDLE_7",
+	"time": 0,
+	"step": 0.1,
+	"loop": true
+}
+
+@Component(Sprite_Component)
+{
+	"visible": true,
+	"image": "GOBLIN_IDLE_0",
+	"tint": {
+		"x": 1,
+		"y": 1,
+		"z": 1,
+		"w": 1
+	},
+	"size": {
+		"x": 10,
+		"y": 10
+	},
+	"tiling": {
+		"x": 1,
+		"y": 1
+	},
+	"blend": "ALPHA",
+	"flip_x": false,
+	"flip_y": false,
+	"autosize": true
+}

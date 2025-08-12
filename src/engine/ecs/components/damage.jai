@@ -47,7 +47,7 @@ reset_life :: (entity : Entity) -> bool {
     return true; 
 }
 
-query_damage_collisions :: () {
+tick_damage_components :: () {
     using context.collisions2d;
     using context.damage_registry;
     array_reset_keeping_memory(*damage_events);

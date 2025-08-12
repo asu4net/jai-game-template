@@ -1,7 +1,10 @@
 ImGui :: #import "ImGui";
 
 ImGui_State :: struct {
-    ctx: ImGui.ImGuiContext; 
+    ctx: ImGui.ImGuiContext;
+    callbacks: struct {
+        draw: ();
+    };
 }
 
 #add_context imgui: *ImGui_State;
@@ -43,7 +46,10 @@ process_imgui_events :: inline (event : SDL_Event) {
     ImGui.ImplSDL3_ProcessEvent(*event);
 }
 
-draw_imgui :: inline (proc : () = null) {
+draw_imgui :: inline () {
+
+    using imgui := context.imgui;
+    
     ImGui.ImplOpenGL3_NewFrame();
     ImGui.ImplSDL3_NewFrame();
     ImGui.NewFrame();
@@ -80,9 +86,11 @@ draw_imgui :: inline (proc : () = null) {
         ImGui.DockSpace(ImGui.GetID("Dockspace"), size = .{0, 0});
     }
 
+    // TODO move this stuff to another place
+    #if EDITOR && ECS then draw_editor(); 
     // User draw.
-    if proc then proc();
-    
+    if callbacks.draw then callbacks.draw();
+
     if ImGui.GetIO().ConfigFlags_ & .DockingEnable
     then ImGui.End(); // Viewport end.
 

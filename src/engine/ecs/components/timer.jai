@@ -16,7 +16,7 @@ start_timer_component :: (entity : Entity, finished_cbk : ON_END_CBK) {
     on_end_cbk = finished_cbk;
 }
 
-tick_timer_entities :: () {
+tick_timer_components :: () {
     view := get_entity_view(Timer_Component);
     for entity: view {
         using timer  := get_component(Timer_Component, entity);

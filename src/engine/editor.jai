@@ -1,5 +1,3 @@
-#load "editor/utils.jai";
-
 #if IMGUI {
     #load "editor/editor_props.jai";
 

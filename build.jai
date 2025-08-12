@@ -97,6 +97,7 @@ setup_workspace :: (build_args : Build_Args) -> Workspace {
     options.output_path = build_args.out_dir;
     make_directory_if_it_does_not_exist(options.output_path);
     if build_args.flags & .RELEASE {
+        log("*** BUILDING RELEASE ***");
         options.backend = .LLVM;
         set_optimization(*options, .OPTIMIZED);
     } else {

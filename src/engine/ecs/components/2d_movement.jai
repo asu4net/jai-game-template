@@ -18,7 +18,7 @@ Movement2D_Component :: struct @Component @InitOrder(100) {
     interp_proc        : INTERP_PROC; @JsonIgnore
 }
 
-move_entities :: () {
+tick_movement_component :: () {
     view := get_entity_view(Transform2D_Component, Movement2D_Component);
     for entity: view {
         using transform  := get_component(Transform2D_Component, entity);
