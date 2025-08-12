@@ -8,6 +8,20 @@ Atlas_Animation_Component :: struct @Component {
     loop    : bool = false;
 }
 
+play_atlas_animation :: inline (entity: Entity, start := Atlas_Image.COUNT, end := Atlas_Image.COUNT) {
+    anim := get_component(Atlas_Animation_Component, entity);
+    if start != .COUNT then anim.start = start;
+    if end != .COUNT then anim.end = end;
+    anim.current = anim.start;
+    anim.playing = true;
+}
+
+stop_atlas_animation :: inline (entity: Entity) {
+    anim := get_component(Atlas_Animation_Component, entity);
+    anim.playing = false;
+    anim.current = anim.start;
+}
+
 tick_atlas_animation_components :: () {
     view := get_entity_view(Atlas_Animation_Component, Sprite_Component);
     for entity: view {

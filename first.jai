@@ -12,7 +12,7 @@ goblin: Entity;
 
 game_begin :: () {
     goblin = dlz_entity_from_file("assets/goblin.prefab");
-    get_component(Atlas_Animation_Component, goblin).playing = true;
+    play_atlas_animation(goblin);
 }
 
 game_tick :: () {
