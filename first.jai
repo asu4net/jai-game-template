@@ -1,11 +1,14 @@
 #load "src/engine.jai";
+#load "src/hello.jai";
+
+BG_COLOR :: Vector4.{ 0.87, 0.99, 0.84, 1 };
 
 main :: () {
     using app_callbacks();
     begin = game_begin; 
     end   = game_end;
     tick  = game_tick;
-    run_app(name = "The Hello Game", editor_play_directly = true);
+    run_app(name = "The Hello Game", bg_tint = BG_COLOR, editor_play_directly = true);
 }
 
 player: Entity;
@@ -16,9 +19,7 @@ game_begin :: () {
 }
 
 game_tick :: () {
-    if get_pixel_id() == player.(int) && is_mouse_button_down(.L) {
-        set_pos(player, get_mouse_world_pos());
-    }
+    tick_character_components();
 }
 
 game_end :: () {
