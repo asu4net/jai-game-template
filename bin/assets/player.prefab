@@ -1,4 +1,4 @@
-ALK
+_
 @Entity(567844573723849266)
 
 @Component(Entity_Info)
@@ -100,7 +100,9 @@ ALK
 			"flip": false
 		}
 	],
-	"is_player": true
+	"is_player": true,
+	"idle_step": 0.5,
+	"run_step": 0.15
 }
 
 @Component(Sprite_Component)
