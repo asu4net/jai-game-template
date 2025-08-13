@@ -1,4 +1,4 @@
-_
+":
 @Entity(567844573723849266)
 
 @Component(Entity_Info)
@@ -9,6 +9,9 @@ _
 		"uuid": 0
 	},
 	"children": [
+		{
+			"uuid": 15967350592674137906
+		}
 	]
 }
 
@@ -126,5 +129,57 @@ _
 	"blend": "ALPHA",
 	"flip_x": false,
 	"flip_y": false,
+	"layer": 0,
+	"autosize": true
+}
+
+@Entity(15967350592674137906)
+
+@Component(Entity_Info)
+{
+	"name": "gun",
+	"flags": "LOCAL_ENABLED | ENABLED",
+	"parent": {
+		"uuid": 567844573723849266
+	},
+	"children": [
+	]
+}
+
+@Component(Transform2D_Component)
+{
+	"pos": {
+		"x": 0.1,
+		"y": -0.1
+	},
+	"scl": {
+		"x": 1,
+		"y": 1
+	},
+	"ang": 54.099998
+}
+
+@Component(Sprite_Component)
+{
+	"visible": true,
+	"image": "GUN",
+	"tint": {
+		"x": 1,
+		"y": 1,
+		"z": 1,
+		"w": 1
+	},
+	"size": {
+		"x": 4.5,
+		"y": 4.5
+	},
+	"tiling": {
+		"x": 1,
+		"y": 1
+	},
+	"blend": "ALPHA",
+	"flip_x": true,
+	"flip_y": false,
+	"layer": 1,
 	"autosize": true
 }
