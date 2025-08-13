@@ -67,7 +67,7 @@ tick_character_components :: () {
         } else {
             stopped = true;
         }
-
+        
         atlas_anim.step = ifx stopped then character.idle_step else character.run_step; 
 
         state := compute_animation_state(character.last_dir, stopped);
