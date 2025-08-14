@@ -1,6 +1,7 @@
 Gun_Component :: struct @Component {
     dir: Vector2; @JsonIgnore
     angle: f32; @JsonIgnore
+    fire_point_pos: Vector2; @JsonIgnore
     hand_offset: f32;
     visuals_offset: f32;
 }
@@ -46,6 +47,14 @@ tick_gun_entity_rotation :: (entity: Entity) {
             gun_sprite.layer = ifx is_up 
                 then owner_sprite.layer - 1 
                 else owner_sprite.layer + 1;
-        }    
+            firepoint := get_child_at(gun_visuals, 0);
+            if firepoint != NULL_ENTITY {
+                pos := get_pos(firepoint);
+                pos.x = abs(pos.x) * ifx left_side then -1 else +1;
+                set_pos(firepoint, pos);
+                m := get_matrix(firepoint);
+                gun.fire_point_pos = xy(m._14, m._24);
+            }
+        }
     }
 }

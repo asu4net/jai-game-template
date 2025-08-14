@@ -93,7 +93,7 @@
 	],
 	"is_player": true,
 	"idle_step": 0.5,
-	"run_step": 0.15,
+	"run_step": 0.15
 }
 
 @Component(Atlas_Animation_Component)
@@ -177,6 +177,9 @@
 		"uuid": 10905521372627386162
 	},
 	"children": [
+		{
+			"uuid": 3932392934511946546
+		}
 	]
 }
 
@@ -215,5 +218,56 @@
 	"flip_x": false,
 	"flip_y": false,
 	"layer": 1,
+	"autosize": true
+}
+
+@Entity(3932392934511946546)
+
+@Component(Entity_Info)
+{
+	"name": "fire_point",
+	"flags": "LOCAL_ENABLED | ENABLED",
+	"parent": {
+		"uuid": 15967350592674137906
+	},
+	"children": [
+	]
+}
+
+@Component(Transform2D_Component)
+{
+	"pos": {
+		"x": 0.15,
+		"y": 0.02
+	},
+	"scl": {
+		"x": 1,
+		"y": 1
+	},
+	"ang": 0
+}
+
+@Component(Sprite_Component)
+{
+	"visible": true,
+	"image": "COUNT",
+	"tint": {
+		"x": 1,
+		"y": 0,
+		"z": 0,
+		"w": 1
+	},
+	"size": {
+		"x": 0.1,
+		"y": 0.1
+	},
+	"tiling": {
+		"x": 1,
+		"y": 1
+	},
+	"blend": "ALPHA",
+	"flip_x": false,
+	"flip_y": false,
+	"layer": 100,
 	"autosize": true
 }
