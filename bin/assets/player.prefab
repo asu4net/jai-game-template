@@ -1,4 +1,3 @@
-384
 @Entity(567844573723849266)
 
 @Component(Entity_Info)
@@ -95,9 +94,6 @@
 	"is_player": true,
 	"idle_step": 0.5,
 	"run_step": 0.15,
-	"gun_ref": {
-		"uuid": 10905521372627386162
-	}
 }
 
 @Component(Atlas_Animation_Component)
