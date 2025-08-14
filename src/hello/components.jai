@@ -26,7 +26,6 @@ Character_Component :: struct @Component {
     is_player  : bool;
     idle_step  : f32;
     run_step   : f32;
-    gun_ref    : Entity_Ref;
 }
 
 tick_character_components :: () {
@@ -36,10 +35,20 @@ tick_character_components :: () {
         movement   := get_component(Movement2D_Component, entity);
         atlas_anim := get_component(Atlas_Animation_Component, entity);
         
+        // Slot 0 is for gun
+        gun_entity := get_child_at(0, entity); 
+        gun: *Gun_Component;
+        if gun_entity != NULL_ENTITY && has_component(Gun_Component, gun_entity) {
+            gun = get_component(Gun_Component, gun_entity);
+        }
+        
         // If is the player lets just poll the input
         if character.is_player {
             movement.has_target = false;
             movement.dir = compute_input_dir(); 
+
+            // Player gun handling
+            if gun then gun.dir = compute_mouse_input_dir(get_pos(entity));
         }
         
         eps :: 0.001;
@@ -53,20 +62,11 @@ tick_character_components :: () {
         }
 
         atlas_anim.step = ifx stopped then character.idle_step else character.run_step; 
-
-        state := compute_animation_state(character.last_dir, stopped);
+        
+        state := compute_animation_state(ifx gun then gun.dir else character.last_dir, stopped);
         if state != character.curr_state {
             character.curr_state = state;
             play_animation(entity, state);
-        }
-
-        gun_entity := resolve_ref(*character.gun_ref);
-
-        // Player gun handling
-        if gun_entity != NULL_ENTITY && character.is_player {
-            // we just make the gun point to the right place.
-            gun := get_component(Gun_Component, gun_entity);
-            gun.dir = compute_mouse_input_dir(get_pos(entity));
         }
     }
 }
@@ -100,7 +100,7 @@ compute_animation_state :: (dir: Vector2, stopped: bool) -> Animation_State {
     else if angle < 202.5                  return ifx stopped then .LOOK_L else .RUN_L;
     else if angle < 247.5                  return ifx stopped then .LOOK_L else .RUN_L;
     else if angle < 292.5                  return ifx stopped then .LOOK_F else .RUN_F;
-    return .LOOK_B;
+    else return .LOOK_R;
 }
 
 play_animation :: (entity: Entity, state: Animation_State) {
