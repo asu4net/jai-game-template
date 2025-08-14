@@ -15,11 +15,11 @@ player: Entity;
 
 game_begin :: () {
     player = dlz_entity_from_file("assets/player.prefab");
-    play_atlas_animation(player);
 }
 
 game_tick :: () {
     tick_character_components();
+    tick_gun_components();
 }
 
 game_end :: () {

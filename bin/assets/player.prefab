@@ -1,4 +1,4 @@
-":
+384
 @Entity(567844573723849266)
 
 @Component(Entity_Info)
@@ -10,7 +10,7 @@
 	},
 	"children": [
 		{
-			"uuid": 15967350592674137906
+			"uuid": 10905521372627386162
 		}
 	]
 }
@@ -45,17 +45,6 @@
 		"x": 0,
 		"y": 0
 	}
-}
-
-@Component(Atlas_Animation_Component)
-{
-	"playing": false,
-	"current": "HELLO_FRONT_0",
-	"start": "HELLO_FRONT_0",
-	"end": "HELLO_FRONT_1",
-	"time": 0,
-	"step": 0.15,
-	"loop": true
 }
 
 @Component(Character_Component)
@@ -105,7 +94,21 @@
 	],
 	"is_player": true,
 	"idle_step": 0.5,
-	"run_step": 0.15
+	"run_step": 0.15,
+	"gun_ref": {
+		"uuid": 10905521372627386162
+	}
+}
+
+@Component(Atlas_Animation_Component)
+{
+	"playing": false,
+	"current": "HELLO_FRONT_0",
+	"start": "HELLO_FRONT_0",
+	"end": "HELLO_FRONT_1",
+	"time": 0,
+	"step": 0.15,
+	"loop": true
 }
 
 @Component(Sprite_Component)
@@ -133,7 +136,7 @@
 	"autosize": true
 }
 
-@Entity(15967350592674137906)
+@Entity(10905521372627386162)
 
 @Component(Entity_Info)
 {
@@ -143,6 +146,41 @@
 		"uuid": 567844573723849266
 	},
 	"children": [
+		{
+			"uuid": 15967350592674137906
+		}
+	]
+}
+
+@Component(Transform2D_Component)
+{
+	"pos": {
+		"x": 0,
+		"y": -0.07
+	},
+	"scl": {
+		"x": 1,
+		"y": 1
+	},
+	"ang": 0
+}
+
+@Component(Gun_Component)
+{
+	"hand_offset": 0.05,
+	"visuals_offset": 0.1
+}
+
+@Entity(15967350592674137906)
+
+@Component(Entity_Info)
+{
+	"name": "gun_visuals",
+	"flags": "LOCAL_ENABLED | ENABLED",
+	"parent": {
+		"uuid": 10905521372627386162
+	},
+	"children": [
 	]
 }
 
@@ -150,13 +188,13 @@
 {
 	"pos": {
 		"x": 0.1,
-		"y": -0.1
+		"y": 0
 	},
 	"scl": {
 		"x": 1,
 		"y": 1
 	},
-	"ang": 54.099998
+	"ang": 0
 }
 
 @Component(Sprite_Component)
@@ -178,7 +216,7 @@
 		"y": 1
 	},
 	"blend": "ALPHA",
-	"flip_x": true,
+	"flip_x": false,
 	"flip_y": false,
 	"layer": 1,
 	"autosize": true

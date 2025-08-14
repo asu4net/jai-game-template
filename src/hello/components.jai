@@ -26,6 +26,7 @@ Character_Component :: struct @Component {
     is_player  : bool;
     idle_step  : f32;
     run_step   : f32;
+    gun_ref    : Entity_Ref;
 }
 
 tick_character_components :: () {
@@ -58,6 +59,15 @@ tick_character_components :: () {
             character.curr_state = state;
             play_animation(entity, state);
         }
+
+        gun_entity := resolve_ref(*character.gun_ref);
+
+        // Player gun handling
+        if gun_entity != NULL_ENTITY && character.is_player {
+            // we just make the gun point to the right place.
+            gun := get_component(Gun_Component, gun_entity);
+            gun.dir = compute_mouse_input_dir(get_pos(entity));
+        }
     }
 }
 
@@ -70,6 +80,12 @@ compute_input_dir :: () -> Vector2 {
     if is_key_down(.A) x -= 1; 
     if is_key_down(.D) x += 1;
     dir = normalize(dir);  
+    return dir;
+}
+
+compute_mouse_input_dir :: (center: Vector2) -> Vector2 {
+    mouse_pos := get_mouse_world_pos();
+    dir := normalize(mouse_pos - center);
     return dir;
 }
 
@@ -96,5 +112,39 @@ play_animation :: (entity: Entity, state: Animation_State) {
         play_atlas_animation(entity, it.start, it.end);
         sprite.flip_x = it.flip;
         return;
+    }
+}
+
+#scope_export
+
+Gun_Component :: struct @Component {
+    dir: Vector2; @JsonIgnore
+    angle: f32; @JsonIgnore
+    hand_offset: f32;
+    visuals_offset: f32;
+}
+
+tick_gun_components :: () {
+    view := get_entity_view(Gun_Component, Transform2D_Component);
+    for view {
+        gun := get_component(Gun_Component, it);
+        gun.angle = atan2(gun.dir.y, gun.dir.x) * DEG_PER_RAD;
+        if gun.angle < 0 then gun.angle += 360;
+        left_side := gun.angle > 90 && gun.angle < 270;
+        if left_side then gun.angle += 180;
+        set_ang(it, gun.angle);
+        // between 90 and 270 we want to flip the weapon sprite
+        // we are going to asume that the first child of gun is the visual
+        gun_visuals := get_child_at(it, 0);
+        if gun_visuals != NULL_ENTITY {
+            sprite := get_component(Sprite_Component, gun_visuals);
+            sprite.flip_x = left_side;
+            pos := get_pos(gun_visuals);
+            pos.x = ifx left_side then -gun.visuals_offset else gun.visuals_offset; 
+            set_pos(gun_visuals, pos);
+        }
+        pos := get_pos(it);
+        pos.x = ifx left_side then -gun.hand_offset else gun.hand_offset;
+        set_pos(it, pos);
     }
 }
