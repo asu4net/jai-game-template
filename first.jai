@@ -12,9 +12,11 @@ main :: () {
 }
 
 player: Entity;
+bullets: Entity_Pool(2);
 
 game_begin :: () {
     player = dlz_entity_from_file("assets/player.prefab");
+    init_entity_pool(*bullets, "assets/projectile.prefab");
 }
 
 game_tick :: () {
@@ -23,5 +25,6 @@ game_tick :: () {
 }
 
 game_end :: () {
+    deinit_entity_pool(*bullets);
     destroy_entity(player);
 }
