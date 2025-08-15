@@ -1,3 +1,5 @@
+FPS_SAMPLES :: 240;
+
 Time :: struct {
     max_delta_time      : float64 = 0.06;
     fixed_frame_time    : float64 = 0.06;
@@ -8,6 +10,10 @@ Time :: struct {
     last_time           : float64 = 0;
     fixed_update_calls  : u32 = 0;
     scale               : float32 = 1;
+
+    frame_times : [FPS_SAMPLES] float32;
+    frame_index := 0;
+    frame_total : float32;
 }
 
 #add_context time : Time;
@@ -34,6 +40,11 @@ time_step :: () {
         acc_fixed_delta -= fixed_frame_time;
         fixed_update_calls += 1;
     }
+
+    frame_total -= frame_times[frame_index];
+    frame_times[frame_index] = frame_time;
+    frame_total += frame_time;
+    frame_index = (frame_index + 1) % FPS_SAMPLES;
 }
 
 frame_time :: () -> float32 {
@@ -47,7 +58,9 @@ get_time :: () -> float64 {
 }
 
 get_frame_rate :: inline () -> float32 {
-    return (1).(float32) / context.time.frame_time;
+    using context.time;
+    av := frame_total / FPS_SAMPLES;
+    return ifx (av > 0) then (1.0 / av) else 0.0;
 }
 
 get_average_frame_rate :: inline () -> float32 {

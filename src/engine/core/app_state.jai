@@ -98,8 +98,8 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             tick_frame_by_frame_mode();
             if performed(.TOGGLE_PLAY)
             then toggle_play();
-            editor_title := tprint("% - FPS: %", name, get_average_frame_rate());
-            set_window_title(*window, editor_title);
+            editor_title := tprint("% - FPS: %", name, get_frame_rate());
+            set_window_title(*window, editor_title ,,temp);
         }
         
         if should_tick_logic() && cbk.tick 
