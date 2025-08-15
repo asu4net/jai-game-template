@@ -28,9 +28,9 @@
 {
 	"interp_mode": "NONE",
 	"start": false,
-	"speed_min": 1,
-	"speed_max": 3,
-	"time_to_max_speed": 0.3,
+	"speed_min": 0,
+	"speed_max": 3.5,
+	"time_to_max_speed": 0,
 	"speed_progress": 0,
 	"target": {
 		"x": 0,

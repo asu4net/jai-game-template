@@ -16,7 +16,7 @@ bullets: Entity_Pool(200);
 
 game_begin :: () {
     player = dlz_entity_from_file("assets/player.prefab");
-    init_entity_pool(*bullets, "assets/projectile.prefab");
+    init_entity_pool(*bullets, "assets/bullet.prefab");
 }
 
 game_tick :: () {
