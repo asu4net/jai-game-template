@@ -36,6 +36,9 @@ deinit_entity_pool :: (entity_pool : *Entity_Pool) {
 }
 
 get_pool_element :: (entity_pool : *Entity_Pool) -> Entity {
+    if !entity_pool.available_ids.count {
+        return NULL_ENTITY;
+    }
     index := pop_front(*entity_pool.available_ids);
     if(entity_pool.get_element_cbk) {
         entity_pool.get_element_cbk(entity_pool.elements[index]);

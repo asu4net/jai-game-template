@@ -1,15 +1,10 @@
 CollisionFlag :: enum_flags u16 {
     NONE;
-    _1;
-    _2;
-    _3;
-    _4;
-    _5;
-    _6;
-    _7;
-    _8;
-    _9;
-    _10;
+    PLAYER;
+    PLAYER_BULLET;
+    ENEMY;
+    ENEMY_BULLET;
+    PICK_UP;
 }
 
 CollisionEventEnter :: struct {
@@ -148,6 +143,26 @@ handle_collision_enter :: (entity_A : Entity, entity_B : Entity) {
             }
             
         }
+    }
+}
+
+draw_collision2d_components :: () {
+    
+    view := get_entity_view(Transform2D_Component, Circle_Collider_Component);
+    collisions_table := context.collisions2d.collisions_table;
+    for view {
+        coll := get_component(Circle_Collider_Component, it);
+        ref := make_ref(it);
+        circle: Circle;
+        circle.transform = get_matrix(it);
+        circle.rad = coll.radius;
+        circle.tint = LIGHT_GREEN;
+        if table_contains(*collisions_table, ref) {
+            collides_with := table_find_pointer(*collisions_table, ref);
+            if collides_with.count != 0 then circle.tint = LIGHT_RED;
+            
+        }
+        draw_circle(circle);
     }
 }
 
