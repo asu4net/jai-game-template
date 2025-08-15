@@ -226,26 +226,30 @@ flush_renderer2d :: () {
     memset(textures_to_bind.data, 0, size_of(*Texture) * textures_to_bind.count);
 }
 
-assign_tex_slot :: (texture: *Texture) -> (tex_slot : s32) {
+assign_tex_slot :: (texture: *Texture) -> (tex_slot: s32) {
 
     using state := context.renderer2d;
 
-    tex_slot: s32;
+    tex_slot: s32 = -1;
     texture_ := ifx !texture then *white_texture else texture; 
     
-    for i : 0..state.last_tex_slot - 1{
+    for i : 0..state.last_tex_slot - 1 {
         if state.textures_to_bind[i].id == texture_.id {
             tex_slot = i;
             break;
         }
     }
-    if tex_slot == 0 {
-        if state.last_tex_slot > MAX_TEXTURE_SLOTS {
+    
+    if tex_slot < 0 {
+        
+        if state.last_tex_slot == MAX_TEXTURE_SLOTS {
             flush_renderer2d();
         }
+        
         state.textures_to_bind[state.last_tex_slot] = texture_;
         tex_slot = state.last_tex_slot;
         state.last_tex_slot += 1;
     }
+    
     return tex_slot;
 }
