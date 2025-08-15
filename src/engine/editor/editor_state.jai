@@ -159,3 +159,12 @@ save_prefab :: () {
     slz_entity(*builder, prefab ,,temp);
     File.write_entire_file(tprint("assets/%.prefab", get_name(prefab) ,,temp), builder_to_string(*builder, prefab ,,temp));
 }
+
+save_selected :: () {
+    using context.editor;
+    prefab := resolve_ref(*selected_ref);
+    assert(prefab != NULL_ENTITY);
+    builder : String_Builder;
+    slz_entity(*builder, prefab ,,temp);
+    File.write_entire_file(tprint("assets/%.prefab", get_name(prefab) ,,temp), builder_to_string(*builder, prefab ,,temp));
+}

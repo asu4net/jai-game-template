@@ -79,6 +79,15 @@ draw_entity_hierarchy :: (entity : Entity) {
             ImGui.EndPopup();
         }
 
+        // Save entity -----------------------------------------------------
+        selected := resolve_ref(*context.editor.selected_ref);
+        if selected != NULL_ENTITY && ImGui.BeginPopupContextItem() {
+            if ImGui.MenuItem("Save Entity") {
+                save_selected();
+            }
+            ImGui.EndPopup();
+        }
+
         // Selection management ---------------------------------------------
         
         if ImGui.IsItemClicked(.Left) {
