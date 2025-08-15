@@ -2,7 +2,7 @@
 
 @Component(Entity_Info)
 {
-	"name": "projectile",
+	"name": "bullet",
 	"flags": "LOCAL_ENABLED | ENABLED",
 	"parent": {
 		"uuid": 0
@@ -48,6 +48,12 @@
 	"radius": 0.059,
 	"flag": "PLAYER_BULLET",
 	"collides_with": "ENEMY"
+}
+
+@Component(Timer_Component)
+{
+	"started": false,
+	"time": 2
 }
 
 @Component(Sprite_Component)

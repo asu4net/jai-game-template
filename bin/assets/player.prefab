@@ -250,7 +250,7 @@
 
 @Component(Sprite_Component)
 {
-	"visible": true,
+	"visible": false,
 	"image": "COUNT",
 	"tint": {
 		"x": 1,

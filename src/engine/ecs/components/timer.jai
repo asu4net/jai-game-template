@@ -9,7 +9,7 @@ Timer_Component :: struct @Component @InitOrder(1000)  {
 }
 
 // not init
-start_timer_component :: (entity : Entity, finished_cbk : ON_END_CBK) {
+start_timer_component :: (entity: Entity, finished_cbk : ON_END_CBK) {
     using timer := get_component(Timer_Component, entity);
     started               = true;
     current_time          = 0;

@@ -41,6 +41,12 @@ tick_gun_shot :: (entity: Entity) {
         movement := get_component(Movement2D_Component, bullet);
         movement.start = true;
         movement.dir = dir;
+        cmp_timer := get_component(Timer_Component, bullet);
+        start_timer_component(bullet, (e: Entity) {
+            set_enabled(e, false);
+            ok := return_pool_element(*bullets, e);
+            assert(ok);
+        });
     }
 }
 
