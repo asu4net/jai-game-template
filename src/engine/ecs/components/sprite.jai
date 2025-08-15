@@ -26,7 +26,7 @@ draw_sprite_entities :: () {
         using transform := get_component(Transform2D_Component, entity);
         using sprite    := get_component(Sprite_Component,      entity);
         
-        if !visible then return;
+        if !visible then continue;
         
         if has_component(Blink_Component, entity)
         then update_blink(get_component(Blink_Component, entity), *tint);

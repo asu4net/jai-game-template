@@ -1,0 +1,131 @@
+
+@Entity(3078212138829431)
+
+@Component(Entity_Info)
+{
+	"name": "skelleton",
+	"flags": "LOCAL_ENABLED | ENABLED",
+	"parent": {
+		"uuid": 0
+	},
+	"children": [
+	]
+}
+
+@Component(Transform2D_Component)
+{
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"scl": {
+		"x": 1,
+		"y": 1
+	},
+	"ang": 0
+}
+
+@Component(Movement2D_Component)
+{
+	"interp_mode": "NONE",
+	"start": true,
+	"speed_min": 0,
+	"speed_max": 1,
+	"time_to_max_speed": 0.7,
+	"speed_progress": 0,
+	"target": {
+		"x": 0,
+		"y": 0
+	},
+	"has_target": false,
+	"dir": {
+		"x": 0,
+		"y": 0
+	}
+}
+
+@Component(Character_Component)
+{
+	"animation_nodes": [
+		{
+			"state": "LOOK_F",
+			"start": "SKELETON_IDLE1",
+			"end": "SKELETON_IDLE6",
+			"flip": false
+		},{
+			"state": "LOOK_R",
+			"start": "SKELETON_IDLE1",
+			"end": "SKELETON_IDLE6",
+			"flip": false
+		},{
+			"state": "LOOK_L",
+			"start": "SKELETON_IDLE1",
+			"end": "SKELETON_IDLE6",
+			"flip": true
+		},{
+			"state": "LOOK_B",
+			"start": "SKELETON_IDLE1",
+			"end": "SKELETON_IDLE6",
+			"flip": false
+		},{
+			"state": "RUN_L",
+			"start": "SKELETON_WALK1",
+			"end": "SKELETON_WALK8",
+			"flip": true
+		},{
+			"state": "RUN_R",
+			"start": "SKELETON_WALK1",
+			"end": "SKELETON_WALK8",
+			"flip": false
+		},{
+			"state": "RUN_F",
+			"start": "SKELETON_WALK1",
+			"end": "SKELETON_WALK8",
+			"flip": false
+		},{
+			"state": "RUN_B",
+			"start": "SKELETON_WALK1",
+			"end": "SKELETON_WALK8",
+			"flip": false
+		}
+	],
+	"is_player": true,
+	"idle_step": 0.5,
+	"run_step": 0.15
+}
+
+@Component(Atlas_Animation_Component)
+{
+	"playing": false,
+	"current": "SKELETON_IDLE1",
+	"start": "SKELETON_IDLE1",
+	"end": "SKELETON_IDLE6",
+	"time": 0.14156,
+	"step": 0.15,
+	"loop": true
+}
+
+@Component(Sprite_Component)
+{
+	"visible": true,
+	"image": "SKELETON_IDLE1",
+	"tint": {
+		"x": 1,
+		"y": 1,
+		"z": 1,
+		"w": 1
+	},
+	"size": {
+		"x": 7,
+		"y": 7
+	},
+	"tiling": {
+		"x": 1,
+		"y": 1
+	},
+	"blend": "ALPHA",
+	"flip_x": false,
+	"flip_y": false,
+	"layer": 0,
+	"autosize": true
+}

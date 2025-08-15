@@ -12,10 +12,13 @@ main :: () {
 }
 
 player: Entity;
+skelly: Entity;
 bullets: Entity_Pool(200);
 
 game_begin :: () {
     player = dlz_entity_from_file("player");
+    skelly = dlz_entity_from_file("skelleton");
+    set_pos(skelly, RIGHT_2D);
     init_entity_pool(*bullets, "bullet");
     set_renderer2d_zoom(1.5);
 }
@@ -28,4 +31,5 @@ game_tick :: () {
 game_end :: () {
     deinit_entity_pool(*bullets);
     destroy_entity(player);
+    destroy_entity(skelly);
 }
