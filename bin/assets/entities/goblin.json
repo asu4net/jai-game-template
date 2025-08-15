@@ -1,4 +1,3 @@
-
 @Entity(5107400091869227314)
 
 @Component(Entity_Info)
@@ -57,5 +56,6 @@
 	"blend": "ALPHA",
 	"flip_x": false,
 	"flip_y": false,
+	"layer": 0,
 	"autosize": true
 }

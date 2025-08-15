@@ -11,7 +11,7 @@ main :: () {
 goblin: Entity;
 
 game_begin :: () {
-    goblin = dlz_entity_from_file("assets/goblin.prefab");
+    goblin = dlz_entity_from_file("goblin");
     play_atlas_animation(goblin);
 }
 

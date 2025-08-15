@@ -83,6 +83,12 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             running_logic = true;
             cbk.begin();
         }
+        all_entities := get_entity_view(Entity_Info);
+        for entity: all_entities {
+            if it_index == 0 && context.editor.selected_ref.uuid == 0 {
+                context.editor.selected_ref = make_ref(entity);
+            }
+        }
     } else {
         running_logic = true;
         cbk.begin();
