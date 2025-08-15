@@ -1,7 +1,7 @@
 Time :: struct {
     max_delta_time      : float64 = 0.06;
-    fixed_frame_time : float64 = 0.06;
-    frame_time       : float32 = 0;
+    fixed_frame_time    : float64 = 0.06;
+    frame_time          : float32 = 0;
     seconds             : float64 = -1;
     frame_count         : u32 = 0;
     acc_fixed_delta     : float64 = 0;
@@ -44,6 +44,14 @@ get_time :: () -> float64 {
     one_time_init(*is_get_seconds_initialized, init_get_seconds());
     delta := current_time_monotonic() - get_seconds_base_time;
     return to_float64_seconds(delta);
+}
+
+get_frame_rate :: inline () -> float32 {
+    return (1).(float32) / context.time.frame_time;
+}
+
+get_average_frame_rate :: inline () -> float32 {
+    return (context.time.frame_count.(float64) / context.time.seconds).(float32);
 }
 
 set_time_scale :: inline (scale : float32) {

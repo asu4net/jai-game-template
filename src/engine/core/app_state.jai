@@ -6,6 +6,7 @@ Attachment :: enum u8 {
 
 App_State :: struct {
     done          : bool;
+    title          : string;
     window        : Window;
     g_ctx         : Graphics_Context;
     viewport      : Vector2;
@@ -51,10 +52,11 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
     if is_app() then end_app();
     set_app(New(App_State));
     #if DEBUG defer end_app();
-
     using app := get_app();
-    clear_color = bg_tint;
 
+    title = name;
+    clear_color = bg_tint;
+    
     set_working_directory(String.path_strip_filename(System.get_path_of_running_executable()));
     init_window(*window, name, width, height, vsync);
     g_ctx = create_graphics_context(window.handle);
@@ -96,6 +98,8 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
             tick_frame_by_frame_mode();
             if performed(.TOGGLE_PLAY)
             then toggle_play();
+            editor_title := tprint("% - FPS: %", name, get_average_frame_rate());
+            set_window_title(*window, editor_title);
         }
         
         if should_tick_logic() && cbk.tick 
