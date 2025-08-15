@@ -26,7 +26,7 @@ imgui_init :: (window: Window, g_ctx: Graphics_Context) {
     
     if io.ConfigFlags_ & .ViewportsEnable {
         style.WindowRounding = 0.0;
-        style.Colors[ImGui.Col.WindowBg].w = 0.5;
+        style.Colors[ImGui.Col.WindowBg].w = 0.8;
         style.Colors[ImGui.Col.DockingEmptyBg] = .{0, 0, 0, 0};
     }
     ImGui.ImplSDL3_InitForOpenGL(window.handle, g_ctx);
