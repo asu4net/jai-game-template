@@ -38,6 +38,9 @@ tick_gun_shot :: (entity: Entity) {
         if bullet == NULL_ENTITY then return;
         set_enabled(bullet);
         set_pos(bullet, gun.fire_point_pos);
+        movement := get_component(Movement2D_Component, bullet);
+        movement.start = true;
+        movement.dir = dir;
     }
 }
 

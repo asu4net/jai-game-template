@@ -12,7 +12,7 @@ main :: () {
 }
 
 player: Entity;
-bullets: Entity_Pool(2);
+bullets: Entity_Pool(200);
 
 game_begin :: () {
     player = dlz_entity_from_file("assets/player.prefab");

@@ -1,4 +1,3 @@
-ass
 @Entity(16815991958985812530)
 
 @Component(Entity_Info)
@@ -23,6 +22,32 @@ ass
 		"y": 1
 	},
 	"ang": 0
+}
+
+@Component(Movement2D_Component)
+{
+	"interp_mode": "NONE",
+	"start": false,
+	"speed_min": 1,
+	"speed_max": 3,
+	"time_to_max_speed": 0.3,
+	"speed_progress": 0,
+	"target": {
+		"x": 0,
+		"y": 0
+	},
+	"has_target": false,
+	"dir": {
+		"x": 0,
+		"y": 0
+	}
+}
+
+@Component(Circle_Collider_Component)
+{
+	"radius": 0.059,
+	"flag": "PLAYER_BULLET",
+	"collides_with": "ENEMY"
 }
 
 @Component(Sprite_Component)
