@@ -150,6 +150,11 @@ set_renderer2d_projection_data :: inline (data: Projection_Data = .{}) {
     projection_data = data;
 }
 
+set_renderer2d_zoom :: inline (zoom: f32) {
+    using state := context.renderer2d;
+    projection_data.size = zoom;
+}
+
 draw_primitive2d :: inline (primitive_type: Primitive_Type, projection_type: Projection_Type, blend_mode: Blend) {
     assert(context.renderer2d != null);
     
