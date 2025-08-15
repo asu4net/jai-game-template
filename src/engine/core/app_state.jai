@@ -118,7 +118,7 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         update_viewport_and_frame_buffer();
         bind_frame_buffer(*fb);
         clear_frame_buffer_color_and_depth(tint = clear_color);
-        clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID);
+        clear_frame_buffer_attachment(*fb, xx Attachment.PX_ID, S32_MAX);
         
         #if ECS {
             draw_sprite_entities();
