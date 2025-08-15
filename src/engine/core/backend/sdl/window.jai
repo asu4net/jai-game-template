@@ -25,6 +25,16 @@ init_window :: (using window: *Window, name := "game", w := 1280, h := 720, v :=
     return true;
 }
 
+set_window_title :: inline (window: *Window, title: string) {
+    SDL_SetWindowTitle(window.handle, to_c_string(title));
+}
+
+get_window_title :: inline (window: *Window) -> title: string {
+    title := SDL_GetWindowTitle(window.handle);
+    len := c_style_strlen(title);
+    return to_string(title, len);
+}
+
 deinit_window :: (using window: *Window) {
     SDL_DestroyWindow(handle);
 }
