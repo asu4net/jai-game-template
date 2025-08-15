@@ -5,7 +5,7 @@ draw_entity_hierarchy :: (entity : Entity) {
 
     // Node style ------------------------------------------------
 
-    flags : ImGui.TreeNodeFlags;
+    flags: ImGui.TreeNodeFlags;
 
     if get_children(entity).count == 0 {
         flags |= .Leaf;
@@ -56,7 +56,7 @@ draw_entity_hierarchy :: (entity : Entity) {
         
         if ImGui.BeginPopupContextItem() {
             selected := resolve_ref(*context.editor.selected_ref);
-            if ImGui.MenuItem("Create Child Entity") {
+            if ImGui.MenuItem("Create Child") {
                 entity := create_entity();
                 if selected != NULL_ENTITY 
                 then set_parent(entity, selected);
@@ -69,12 +69,29 @@ draw_entity_hierarchy :: (entity : Entity) {
         
         if ImGui.BeginPopupContextItem() {
             selected := resolve_ref(*context.editor.selected_ref);
-            if ImGui.MenuItem("Clone Entity") {
+            if ImGui.MenuItem("Clone") {
                 entity := NULL_ENTITY;
                 if selected != NULL_ENTITY {
                     entity = clone_entity(selected);
                     context.editor.selected_ref = make_ref(entity);
                 }
+            }
+            ImGui.EndPopup();
+        }
+
+        // Save entity -----------------------------------------------------
+        selected := resolve_ref(*context.editor.selected_ref);
+        if selected != NULL_ENTITY && ImGui.BeginPopupContextItem() {
+            if ImGui.MenuItem("Save") {
+                save_selected();
+            }
+            ImGui.EndPopup();
+        }
+
+        // Save entity -----------------------------------------------------
+        if selected != NULL_ENTITY && ImGui.BeginPopupContextItem() {
+            if ImGui.MenuItem("Destroy") {
+                destroy_selected();
             }
             ImGui.EndPopup();
         }
@@ -107,7 +124,7 @@ draw_all_entities_hierarchy :: (opened : *bool) {
     // Draw entities -----------------------------------------------------
     
     all_entities := get_entity_view(Entity_Info);
-    for entity : all_entities {
+    for entity: all_entities {
         if get_parent(entity) != NULL_ENTITY
         then continue;
         draw_entity_hierarchy(entity);
@@ -118,7 +135,7 @@ draw_all_entities_hierarchy :: (opened : *bool) {
     selected := resolve_ref(*context.editor.selected_ref);
     if selected == NULL_ENTITY {
         if ImGui.BeginPopupContextWindow() {
-            if ImGui.MenuItem("Create Empty Entity") {
+            if ImGui.MenuItem("New") {
                 entity := create_entity();
                 context.editor.selected_ref = make_ref(entity);
             }
