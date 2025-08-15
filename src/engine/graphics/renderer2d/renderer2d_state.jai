@@ -222,6 +222,8 @@ flush_renderer2d :: () {
     quad_index_count   = 0;
     circle_count       = 0;
     circle_index_count = 0;
+
+    memset(textures_to_bind.data, 0, size_of(*Texture) * textures_to_bind.count);
 }
 
 assign_tex_slot :: (texture: *Texture) -> (tex_slot : s32) {
