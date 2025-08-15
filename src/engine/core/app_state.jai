@@ -112,7 +112,11 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         then cbk.tick();
         
         #if ECS {
-            tick_timer_components();
+            
+            if should_tick_logic() {
+                tick_timer_components();
+            }
+
             tick_atlas_animation_components();
 
             if should_tick_logic() {
