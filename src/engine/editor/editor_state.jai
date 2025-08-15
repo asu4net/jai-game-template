@@ -53,6 +53,10 @@ draw_editor :: () {
         ImGui.ShowDemoWindow(*show_demo);
     }
 
+    if performed(.TOGGLE_HIERARCHY) {
+        show_hierarchy =! show_hierarchy;
+    }
+
     if show_hierarchy {
         draw_all_entities_hierarchy(*show_hierarchy);
         draw_properties(*show_hierarchy);
