@@ -127,6 +127,13 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
         if cbk.draw 
         then cbk.draw();
         
+        #if EDITOR && ECS {
+            if performed(.TOGGLE_SHOW_COLLIDERS) {
+                show_colliders = !show_colliders;
+            }
+            if show_colliders then draw_collision2d_components();
+        }
+        
         flush_renderer2d();
         
         // Update the pixel id

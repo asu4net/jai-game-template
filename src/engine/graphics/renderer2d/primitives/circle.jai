@@ -7,12 +7,19 @@ Circle_Vertex :: struct {
     entity         : s32;
 }
 
-draw_circle :: (pos := ZERO_2D, rad := (0.50).(f32), thickness := (0.05).(f32), fade := (0.01).(f32), tint := WHITE, id := (0).(u32)) {
+Circle :: struct {
+    #as using base: Primitive2D;
+    rad       := (0.50).(f32); 
+    thickness := (0.05).(f32); 
+    fade      := (0.01).(f32);
+}
+
+draw_circle :: (using circle: Circle) {
     draw_primitive2d(.CIRCLE, .ORTHO_WORLD, .ALPHA);
 
     vertex_positions : Vector4Verts2D = ---;
     scale_mat := scale(IDENTITY, .{ rad * 2.0, rad * 2.0, 1.0 });
-    
+
     vertex_positions[0] = scale_mat * DEF_VERTEX_POSITIONS_2D[0];
     vertex_positions[1] = scale_mat * DEF_VERTEX_POSITIONS_2D[1];
     vertex_positions[2] = scale_mat * DEF_VERTEX_POSITIONS_2D[2];
@@ -23,7 +30,7 @@ draw_circle :: (pos := ZERO_2D, rad := (0.50).(f32), thickness := (0.05).(f32), 
     vertex_colors: Vector4Verts2D = ---;
     for *vertex_colors it.* = tint;
 
-    for *vertex_positions it.* = translate(IDENTITY, .{pos.x, pos.y, 0}) * it.*;
+    for *vertex_positions it.* = transform * it.*;
     
     default_vertex_positions := DEF_VERTEX_POSITIONS_2D;
     
@@ -38,7 +45,7 @@ draw_circle :: (pos := ZERO_2D, rad := (0.50).(f32), thickness := (0.05).(f32), 
         vert.tint           = vertex_colors[i];
         vert.thickness      = final_thickness;
         vert.fade           = fade;
-        vert.entity         = xx id;
+        vert.entity         = xx pixel_id;
     }    
     
     state.circle_index_count += INDICES_PER_2D_PRIMITIVE;
