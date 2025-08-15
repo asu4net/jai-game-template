@@ -59,7 +59,7 @@
 @Component(Sprite_Component)
 {
 	"visible": true,
-	"image": "PROJECTILE",
+	"image": "BULLET",
 	"tint": {
 		"x": 1,
 		"y": 1,
