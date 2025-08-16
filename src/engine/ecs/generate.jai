@@ -1,5 +1,7 @@
 // To be called from the metaprogram
-entity_process_compiler_message :: (w : Workspace, msg : *Message) {
+ecs_generate_quiet := false;
+
+entity_process_compiler_message :: (w: Workspace, msg: *Message) {
     if msg.kind == {
         case .TYPECHECKED;
         {
@@ -16,7 +18,7 @@ entity_process_compiler_message :: (w : Workspace, msg : *Message) {
                     note := String.to_lower_copy(it.text); 
                     if note == ADD_CALLBACK_STR || note == REM_CALLBACK_STR || note == CPY_CALLBACK_STR {
                         found = true;
-                        log("Collected callback procedure %", name);
+                        if !ecs_generate_quiet then log("Collected callback procedure %", name);
                     }
                 }
                 if found then array_add(*procs, it.expression);
@@ -145,7 +147,7 @@ collect_component_info :: (structs: [..] *Code_Struct, result : *Table(string, C
 }
 
 generate_component_arenas_code :: (info_table: Table(string, Component_Info)) -> string {
-    log("Generating code...");
+    if !ecs_generate_quiet then log("Generating code...");
     builder      : String_Builder;
     builder_init : String_Builder;
     builder_deinit : String_Builder;
@@ -165,7 +167,7 @@ generate_component_arenas_code :: (info_table: Table(string, Component_Info)) ->
         print_to_builder(*builder_init, "init_component_arena(*%1_arena, %2);\n", name, max);
         print_to_builder(*builder_init, "array_add(all, *%1_arena);\n", name);
         print_to_builder(*builder_get, "case %1; return *%2_arena;\n", info.type_name, name);
-        log("Registered component arena of type: %. Max elements: %. InitOrder: % \n", info.type_name, max, info.init_order);
+        if !ecs_generate_quiet then log("Registered component arena of type: %. Max elements: %. InitOrder: % \n", info.type_name, max, info.init_order);
     }
 
     for info : info_array {
@@ -173,7 +175,7 @@ generate_component_arenas_code :: (info_table: Table(string, Component_Info)) ->
         print_to_builder(*builder_deinit, "deinit_component_arena(*%1_arena);\n", name);
     }
 
-    log("Done generating code.");
+    if !ecs_generate_quiet then log("Done generating code.");
     return sprint(GENERATED_COMPONENT_ARENAS,
         builder_to_string(*builder),
         builder_to_string(*builder_init),
@@ -207,7 +209,7 @@ assign_component_callbacks :: (procs: [..] *Code_Procedure_Header, info_table: *
 }
 
 generate_component_callbacks_code :: (info_table: Table(string, Component_Info)) -> string {
-    log("Generating code...");
+    if !ecs_generate_quiet then log("Generating code...");
     builder : String_Builder;
 
     for info, _ : info_table {
@@ -224,7 +226,7 @@ generate_component_callbacks_code :: (info_table: Table(string, Component_Info))
             print_to_builder(*builder, "set_rem_component_callback(*%1_arena.type, %2, %3);\n", name, info.type_name, info.rem_proc);
         }
     }
-    log("Done generating code.");
+    if !ecs_generate_quiet then log("Done generating code.");
     return sprint(GENERATED_COMPONENT_CALLBACKS,
         builder_to_string(*builder)
     );

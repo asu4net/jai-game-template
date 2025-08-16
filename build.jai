@@ -11,6 +11,7 @@ Build_Flags :: enum_flags {
     IMGUI;
     EDITOR;
     ECS;
+    QUIET;
 }
 
 Build_Args :: struct {
@@ -83,6 +84,7 @@ collect_build_args :: (using build_args: *Build_Args) {
             case "-imgui";    flags |= .IMGUI;
             case "-editor";   flags |= .EDITOR;
             case "-ecs";      flags |= .ECS;
+            case "-quiet";    flags |= .QUIET;
             case; log("Unrecognized option % \n", arg);
         }
     }
@@ -103,6 +105,12 @@ setup_workspace :: (build_args : Build_Args) -> Workspace {
     } else {
         options.backend = .X64;
         set_optimization(*options, .DEBUG);
+    }
+    if build_args.flags & .QUIET {
+        options.text_output_flags = 0;
+        if build_args.flags & .ECS {
+            ecs_generate_quiet = true;    
+        }
     }
     set_build_options(options, w);
     add_build_file(build_args.build_file, w);
