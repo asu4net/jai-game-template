@@ -6,7 +6,7 @@ Attachment :: enum u8 {
 
 App_State :: struct {
     done          : bool;
-    title          : string;
+    title         : string;
     window        : Window;
     g_ctx         : Graphics_Context;
     viewport      : Vector2;
@@ -95,7 +95,6 @@ run_app :: (name := "game", width := 1280, height := 720, vsync := true, bg_tint
     }
 
     while !done {
-        
         time_step();
         process_window_events(*window, *done);
         update_input_actions();
