@@ -2,6 +2,10 @@
 *.sublime-workspace
 *.sublime-project
 
+# Vs Code
+*.code-workspace
+*.vscode
+
 # Jai ignore folders
 .build/
 modules/
