@@ -1,0 +1,16 @@
+{
+    "cmd": "build-run.bat",
+    "file_regex": "^([A-Z]:[^:]+):(\\d+(,\\d+)?): Error: (.*)",
+    "working_dir": "${project_path}/scripts/win",
+
+    "variants": [
+        {
+            "name": "build",
+            "shell_cmd": "build.bat"
+        },
+        {
+            "name": "build-run",
+            "shell_cmd": "build-run.bat"
+        }
+    ]
+}
